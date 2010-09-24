@@ -1,0 +1,24 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="ThinkGo.BoardHeader"
+	Width="480" Height="64">
+
+	<Grid x:Name="LayoutRoot" Margin="0,10">
+		<Rectangle Fill="{StaticResource WhitePiece}" HorizontalAlignment="Left" Margin="22,0,0,0" Width="48" RenderTransformOrigin="0.5,0.5" >
+			<Rectangle.RenderTransform>
+				<CompositeTransform x:Name="WhiteScale" ScaleX="1" ScaleY="1"/>
+			</Rectangle.RenderTransform>
+		</Rectangle>
+		<Rectangle Fill="{StaticResource BlackPiece}" HorizontalAlignment="Right" Margin="0,0,34,0" Width="48" RenderTransformOrigin="0.5,0.5">
+			<Rectangle.RenderTransform>
+				<CompositeTransform x:Name="BlackScale" ScaleX="1" ScaleY="1"/>
+			</Rectangle.RenderTransform>
+		</Rectangle>
+		<TextBlock x:Name="WhiteName" HorizontalAlignment="Left" Margin="75,0,0,5" TextWrapping="Wrap" Text="{Binding WhitePlayer.Name}" d:LayoutOverrides="Height" FontSize="29.333"/>
+		<TextBlock x:Name="BlackName" HorizontalAlignment="Right" Margin="0,0,89,5" TextWrapping="Wrap" Text="{Binding BlackPlayer.Name}" d:LayoutOverrides="Height" FontSize="29.333"/>
+	</Grid>
+</UserControl>
