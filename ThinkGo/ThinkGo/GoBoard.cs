@@ -4,8 +4,10 @@
 	using System.Diagnostics;
 	using System;
 
-	public class GoBoard
+	public sealed class GoBoard
 	{
+		public static Random Random = new Random();
+
 		public const byte White = 0;
 		public const byte Black = 1;
 		public const byte Empty = 2;
@@ -18,11 +20,12 @@
 
 		public const int MovePass = -1;
 		public const int MoveResign = -2;
+		public const int MoveNull = -3;
 
 		public const int MaxPoints = 20 * 21;
 		public const int NS = 20;
 
-		private static int[] DirDelta = new int[] { NS, -NS, 1, -1 };
+		public static readonly int[] DirDelta = new int[] { NS, -NS, 1, -1 };
 
 		private int[][] numNeighbors;
 		private int[] numNeighborsEmpty;
@@ -32,7 +35,6 @@
 		// Perf. variables, so we don't have to keep allocating them
 		private PointMarker marker = new PointMarker(), marker2 = new PointMarker();
 		private List<Block> adjBlocks = new List<Block>(4);
-		private List<int> capturedStones = new List<int>();
 
 		public GoBoard(int size)
 		{
@@ -61,8 +63,9 @@
 		public int SecondLastMove;
 		public int[] Prisoners = new int[2];
 		public byte ToMove;
+		public List<int> CapturedStones = new List<int>();
 
-		public static int GenerateMove(int x, int y)
+		public static int GeneratePoint(int x, int y)
 		{
 			return (y + 1) * NS + x;
 		}
@@ -102,6 +105,40 @@
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// The assumption here is that the game has been played out until the end.  Any groups remaining are alive, or they would
+		/// have been taken over.  Any points that are surrounded by one color belong to that color, otherwise they are neutral.
+		/// 
+		/// Score is returned with black winning as positive numbers.
+		/// </summary>
+		public float ScoreSimpleEndPosition(float komi)
+		{
+			float score = -komi;
+			for (int y = 0; y < this.Size; y++)
+			{
+				for (int x = 0; x < this.Size; x++)
+				{
+					int p = GeneratePoint(x, y);
+					byte c = this.Board[p];
+					if (c == Empty)
+					{
+						if (this.numNeighbors[Black][p] > 0 &&
+							this.numNeighbors[White][p] == 0)
+							c = Black;
+						else if (this.numNeighbors[White][p] > 0 &&
+								 this.numNeighbors[Black][p] == 0)
+							c = White;
+					}
+
+					if (c == White)
+						--score;
+					else if (c == Black)
+						++score;
+				}
+			}
+			return score;
 		}
 
 		public void Reset()
@@ -156,12 +193,15 @@
 				this.numNeighbors[0][i] = board.numNeighbors[0][i];
 				this.numNeighbors[1][i] = board.numNeighbors[1][i];
 				this.numNeighborsEmpty[i] = board.numNeighborsEmpty[i];
-				if (this.Board[i] == Empty)
+				if (board.Board[i] == Empty || board.Board[i] == Border)
 					this.blocks[i] = null;
 				else if (board.blocks[i].Anchor == i)
 				{
 					byte c = this.Board[i];
 					Block b = this.blockCache[i];
+					b.Stones.Clear();
+					b.Liberties.Clear();
+
 					b.Color = c;
 					b.Anchor = i;
 					for (int j = 0; j < board.blocks[i].Stones.Count; j++)
@@ -173,11 +213,13 @@
 						b.Liberties.Add(board.blocks[i].Liberties[j]);
 				}
 			}
+
+			this.DebugVerify();
 		}
 
 		public List<int> PlaceStone(int move)
 		{
-			this.capturedStones.Clear();
+			this.CapturedStones.Clear();
 			byte opponent = OppColor(this.ToMove);
 
 			if (move != MovePass)
@@ -208,10 +250,36 @@
 			this.LastMove = move;
 			this.ToMove = opponent;
 
-			DebugVerify();
+			this.DebugVerify();
 
-			return this.capturedStones;
+			return this.CapturedStones;
 		}
+
+        public int GetAnchor(int p)
+        {
+            return this.blocks[p].Anchor;
+        }
+
+        public bool InAtari(int p)
+        {
+            return this.blocks[p].Liberties.Count <= 1;
+        }
+
+        public bool OccupiedInAtari(int p)
+        {
+            Block b = this.blocks[p];
+            return b != null && b.Liberties.Count <= 1;
+        }
+
+        public int NumNeighbors(int p, byte c)
+        {
+            return this.numNeighbors[c][p];
+        }
+
+        public int TheLiberty(int p)
+        {
+            return this.blocks[p].Liberties[0];
+        }
 
 		/// <summary>
 		/// Returns true if point is surrounded by one color and no adjacent block is in atari.
@@ -242,11 +310,13 @@
 
 		private void DebugVerify()
 		{
+			return;
+
 			for (int y = 0; y < this.Size; y++)
 			{
 				for (int x = 0; x < this.Size; x++)
 				{
-					int p = GoBoard.GenerateMove(x, y);
+					int p = GoBoard.GeneratePoint(x, y);
 					Debug.Assert(this.Board[p] != GoBoard.Border);
 
 					if (this.Board[p] != GoBoard.Empty)
@@ -471,7 +541,7 @@
 				--nn[p + 1];
 				--nn[p - NS];
 				--nn[p + NS];
-				this.capturedStones.Add(p);
+				this.CapturedStones.Add(p);
 				this.blocks[p] = null;
 			}
 			int numStones = b.Stones.Count;
