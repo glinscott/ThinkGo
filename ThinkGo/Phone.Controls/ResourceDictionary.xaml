@@ -1,0 +1,13 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:local="clr-namespace:Phone.Controls;assembly=Phone.Controls">
+
+    <Color x:Key="TextBoxColor">#BFFFFFFF</Color>
+    <Color x:Key="TextBoxForegroundColor">#FF000000</Color>
+
+    <SolidColorBrush x:Key="PhoneTextBoxBrush" Color="{StaticResource TextBoxColor}" />
+    <SolidColorBrush x:Key="ListPickerBrush" Color="{StaticResource TextBoxColor}" />
+    <SolidColorBrush x:Key="PhoneTextBoxForegroundBrush" Color="{StaticResource TextBoxForegroundColor}" />
+    
+</ResourceDictionary>

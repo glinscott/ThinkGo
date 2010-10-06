@@ -26,6 +26,7 @@
 		private void GoBoardControl_Loaded(object sender, RoutedEventArgs e)
 		{
 			this.game = (GoGame)this.DataContext;
+			this.game.PropertyChanged += this.OnGamePropertyChanged;
 
 			this.pieceSize = (int)(this.ActualWidth / this.game.Board.Size);
 			this.edgeOffset = (int)(this.pieceSize / 2);
@@ -72,9 +73,23 @@
 			this.RefreshBoard();
 		}
 
+		private void OnGamePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (string.Equals(e.PropertyName, "Board"))
+			{
+				this.RefreshBoard();
+			}
+		}
+
 		private void RefreshBoard()
 		{
-			
+			for (int y = 0; y < this.game.Board.Size; y++)
+			{
+				for (int x = 0; x < this.game.Board.Size; x++)
+				{
+					this.UpdatePiece(GoBoard.GeneratePoint(x, y));
+				}
+			}
 		}
 
 		private PathFigure DrawLine(double x, double y, double x2, double y2)
@@ -195,6 +210,11 @@
 		public int WhiteCaptured { get; private set; }
 		public int BlackCaptured { get; private set; }
 
+		public bool CanUndo
+		{
+			get { return this.moves.Count > 0; }
+		}
+
 		public List<int> PlayMove(int move)
 		{
 			bool isWhite = this.Board.ToMove == GoBoard.White;
@@ -205,19 +225,44 @@
 			this.WhiteCaptured = this.Board.Prisoners[GoBoard.White];
 			this.BlackCaptured = this.Board.Prisoners[GoBoard.Black];
 
-			if (this.PropertyChanged != null)
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs("Turn"));
-				this.PropertyChanged(this, new PropertyChangedEventArgs("WhiteCaptured"));
-				this.PropertyChanged(this, new PropertyChangedEventArgs("BlackCaptured"));
-			}
+			this.FireChanged(false);
 
 			return deleted;
 		}
 
 		public void UndoMove()
 		{
-			// TODO!
+			this.Board.Reset();
+
+			int takeBack = 1;
+			if ((this.Board.ToMove == GoBoard.Black && this.BlackPlayer.IsComputer) ||
+				(this.Board.ToMove == GoBoard.White && this.WhitePlayer.IsComputer))
+			{
+				takeBack = 2;
+			}
+			int end = Math.Max(0, this.moves.Count - takeBack);
+			for (int i = 0; i < end; i++)
+			{
+				this.Board.PlaceStone(moves[i]);
+			}
+
+			this.moves.RemoveRange(end, this.moves.Count - end);
+
+			this.FireChanged(true);
+		}
+
+		private void FireChanged(bool boardInvalid)
+		{
+			if (this.PropertyChanged != null)
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs("Turn"));
+				this.PropertyChanged(this, new PropertyChangedEventArgs("WhiteCaptured"));
+				this.PropertyChanged(this, new PropertyChangedEventArgs("BlackCaptured"));
+				if (boardInvalid)
+				{
+					this.PropertyChanged(this, new PropertyChangedEventArgs("Board"));
+				}
+			}
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

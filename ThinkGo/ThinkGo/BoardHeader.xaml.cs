@@ -40,11 +40,11 @@ namespace ThinkGo
 			if (this.game.Board.ToMove == GoBoard.White)
 			{
 				this.WhiteScale.ScaleX = this.WhiteScale.ScaleY = 1;
-				this.BlackScale.ScaleX = this.BlackScale.ScaleY = 0.33;
+				this.BlackScale.ScaleX = this.BlackScale.ScaleY = 0.45;
 			}
 			else
 			{
-				this.WhiteScale.ScaleX = this.WhiteScale.ScaleY = 0.33;
+				this.WhiteScale.ScaleX = this.WhiteScale.ScaleY = 0.45;
 				this.BlackScale.ScaleX = this.BlackScale.ScaleY = 1;
 			}
 		}

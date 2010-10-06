@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
 	xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+	xmlns:system="clr-namespace:System;assembly=mscorlib"
 	x:Class="ThinkGo.App">
 
 	<!--Application Resources-->
@@ -17,5 +18,6 @@
     <Application.Resources>
         <ImageBrush x:Key="BlackPiece" ImageSource="Images/Go_b.png" />
         <ImageBrush x:Key="WhitePiece" ImageSource="Images/Go_w.png" />
+		<system:String x:Key="RightArrowData">M194.15378,277.29068 L168.0623,297.11606 L232.36528,330.36169 L166.9142,367.2674 L191.50041,384.8139 L288.22894,329.67957 z</system:String>
     </Application.Resources>
 </Application>

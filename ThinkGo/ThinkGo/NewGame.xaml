@@ -1,0 +1,35 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:pc="clr-namespace:Phone.Controls;assembly=Phone.Controls"
+	mc:Ignorable="d"
+	x:Class="ThinkGo.NewGame"
+	d:DesignWidth="432" d:DesignHeight="592">
+
+	<Grid x:Name="LayoutRoot" Background="Transparent">
+		<Button Content="Start" VerticalAlignment="Bottom" Margin="120,0,120,49" d:LayoutOverrides="Width" Click="PlayGame"/>
+        
+        <TextBlock Margin="0,267,214,291" TextWrapping="Wrap" Text="Board Size"/>
+        <pc:ListPicker x:Name="BoardSizePicker" Margin="0,297,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667">
+            <pc:ListPicker.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                </DataTemplate>
+            </pc:ListPicker.ItemTemplate>
+        </pc:ListPicker>
+        <Image Source="Images/Go_b.png" Width="32" HorizontalAlignment="Left" Margin="1,63,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment"/>
+        <Image Source="Images/Go_w.png" Width="32" HorizontalAlignment="Left" Margin="1,142,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment"/>
+        <TextBlock HorizontalAlignment="Left" Height="31" Margin="37,65,0,0" TextWrapping="Wrap" Text="Black Player" VerticalAlignment="Top" Width="131"/>
+        <TextBlock HorizontalAlignment="Left" Margin="37,144,0,0" TextWrapping="Wrap" Text="White Player" VerticalAlignment="Top"/>
+        <TextBlock Margin="0,0,214,212" TextWrapping="Wrap" Height="34" VerticalAlignment="Bottom"><Run Text="Handicap"/><LineBreak/><Run/></TextBlock>
+        <pc:ListPicker x:Name="BoardSizePicker_Copy" Margin="0,376,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667">
+        	<pc:ListPicker.ItemTemplate>
+        		<DataTemplate>
+        			<TextBlock Text="{Binding}" />
+        		</DataTemplate>
+        	</pc:ListPicker.ItemTemplate>
+        </pc:ListPicker>
+	</Grid>
+</UserControl>

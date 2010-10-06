@@ -35,6 +35,7 @@
 		// Perf. variables, so we don't have to keep allocating them
 		private PointMarker marker = new PointMarker(), marker2 = new PointMarker();
 		private List<Block> adjBlocks = new List<Block>(4);
+		private List<int> anchors1 = new List<int>(4), anchors2 = new List<int>(4);
 
 		public GoBoard(int size)
 		{
@@ -64,6 +65,7 @@
 		public int[] Prisoners = new int[2];
 		public byte ToMove;
 		public List<int> CapturedStones = new List<int>();
+		public float Komi;
 
 		public static int GeneratePoint(int x, int y)
 		{
@@ -105,6 +107,303 @@
 			}
 
 			return true;
+		}
+
+		public bool SelfAtari(int p, byte c)
+		{
+			Debug.Assert(this.Board[p] == Empty);
+
+			// Enough empty neighbors, no atari
+			if (this.numNeighborsEmpty[p] >= 2)
+				return false;
+
+			byte opp = OppColor(c);
+			int lib = -1;
+			bool hasOwnTarget = false;
+			bool hasCapture = false;
+			for (int i = 0; i < 4; i++)
+			{
+				int target = p + DirDelta[i];
+				byte color = this.Board[target];
+				if (color == Empty)
+				{
+					if (lib == -1)
+						lib = target;
+					else if (lib != target)
+						return false;
+				}
+				else if (color == c)
+				{
+					if (this.blocks[target].Liberties.Count > 2)
+						return false;
+					else
+					{
+						// Check block liberties other than p
+						LibertyList liberties = this.blocks[target].Liberties;
+						for (int j = 0; j < liberties.Count; j++)
+						{
+							if (liberties[j] != p)
+							{
+								if (lib == -1)
+									lib = liberties[j];
+								else if (lib != liberties[j])
+									return false;
+							}
+						}
+					}
+					hasOwnTarget = true;
+				}
+				else if (color == opp)
+				{
+					// Opponent stones, count as liberty if the block is in atari
+					if (this.InAtari(target))
+					{
+						if (lib == -1)
+						{
+							lib = target;
+							hasCapture = true;
+						}
+						else if (lib != target)
+							return false;
+					}
+				}
+			}
+
+			if (lib == -1) // suicide
+				return false;
+			if (!hasOwnTarget && hasCapture) // ko-type capture, ok
+				return false;
+			if (hasOwnTarget && hasCapture)
+			{
+				// Check if we gained some liberties
+				List<int> anchors = new List<int>(5);
+				List<int> stones = this.blocks[lib].Stones;
+				this.NeighborBlocks(p, c, 1, anchors);
+				for (int i = 0; i < stones.Count; i++)
+				{
+					if (stones[i] != lib && this.IsNeighborOfSome(stones[i], anchors, c))
+						return false;
+				}
+			}
+			return true;
+		}
+
+		public bool IsNeighborOfSome(int p, List<int> anchors, byte c)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				int target = p + DirDelta[i];
+				foreach (int anchor in anchors)
+				{
+					Block b = this.blocks[target];
+					if (b != null && anchor == b.Anchor)
+						return true;
+				}
+			}
+			return false;
+		}
+
+		public bool IsSimpleChain(int block, out int other)
+		{
+			if (this.NumLiberties(block) < 2)
+			{
+				other = -1;
+				return false;
+			}
+
+			Block b = this.blocks[block];
+			block = b.Anchor;
+			byte color = b.Color;
+
+			int lib1 = b.Liberties[0];
+			int lib2 = b.Liberties[1];
+
+			this.anchors1.Clear();
+			this.anchors2.Clear();
+
+			this.NeighborBlocks(lib1, color, int.MaxValue, this.anchors1);
+			this.NeighborBlocks(lib1, color, int.MaxValue, this.anchors2);
+
+			foreach (int anchor in this.anchors1)
+			{
+				if (anchor != block && this.anchors2.Contains(anchor))
+				{
+					other = anchor;
+					return true;
+				}
+			}
+
+			other = -1;
+			return false;
+		}
+
+		/// <summary>
+		/// Check if point is a single point eye with one or two adjacent blocks.
+		/// </summary>
+		public bool IsSimpleEye(int p, byte c)
+		{
+			byte opp = OppColor(c);
+			if (this.numNeighborsEmpty[p] > 0 || this.numNeighbors[opp][p] > 0)
+				return false;
+
+			int anchor1 = -1, anchor2 = -1;
+			for (int i = 0; i < 4; i++)
+			{
+				int target = p + DirDelta[i];
+				Block b = this.blocks[target];
+				if (b != null && anchor1 != b.Anchor)
+				{
+					Debug.Assert(this.Board[target] == c);
+
+					if (anchor2 != -1)
+						return false;
+					anchor2 = anchor1;
+					anchor1 = b.Anchor;
+				}
+			}
+
+			// Surrouned completely by one block
+			if (anchor2 == -1)
+				return true;
+
+			List<int> foundAnchors = new List<int>(2);
+			foreach (int liberty in this.blocks[anchor1].Liberties)
+			{
+				if (liberty == p)
+					continue;
+
+				bool isSecondSharedEye = true;
+				foundAnchors.Clear();
+				for (int i = 0; i < 4; i++)
+				{
+					int target = liberty + DirDelta[i];
+					if (this.Board[target] == Border)
+						continue;
+
+					if (this.Board[target] != c)
+					{
+						isSecondSharedEye = false;
+						break;
+					}
+
+					int targetAnchor = this.blocks[target].Anchor;
+					if (anchor1 == targetAnchor || anchor2 == targetAnchor)
+					{
+						isSecondSharedEye = false;
+						break;
+					}
+
+					if (!foundAnchors.Contains(targetAnchor))
+						foundAnchors.Add(targetAnchor);
+				}
+
+				if (isSecondSharedEye && foundAnchors.Count == 2)
+					return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Check if playing at a liberty gains liberties.  Does not handle capturing moves for efficiency.
+		/// This is not required, because capturing moves have a higher priority in the playout.
+		/// </summary>
+		public bool GainsLiberties(int anchor, int liberty)
+		{
+			Debug.Assert(this.Board[liberty] == Empty);
+			Debug.Assert(this.GetAnchor(anchor) == anchor);
+			byte color = this.Board[anchor];
+			int needed = -2; // Need 2 liberties (lose 1 by playing on liberty itself)
+			for (int i = 0; i < 4; i++)
+			{
+				int p = liberty + GoBoard.DirDelta[i];
+				byte c = this.Board[p];
+				if (c == Empty)
+				{
+					if (!this.IsLibertyOfBlock(p, anchor))
+						if (++needed >= 0)
+							return true;
+				}
+				else if (c == color)
+				{
+					// Merge with block
+					int anchor2 = this.GetAnchor(p);
+					if (anchor != anchor2)
+					{
+						foreach (int otherLiberty in this.GetLiberties(p))
+						{
+							if (!this.IsLibertyOfBlock(otherLiberty, anchor))
+								if (++needed >= 0)
+									return true;
+						}
+					}
+				}
+				// else - capture, not handled
+			}
+			return false;
+		}
+
+		public bool IsLibertyOfBlock(int p, int anchor)
+		{
+			Debug.Assert(this.Board[p] == Empty);
+			Debug.Assert(this.Board[anchor] != Empty);
+			Debug.Assert(this.GetAnchor(anchor) == anchor);
+
+			Block b = this.blocks[anchor];
+			if (this.numNeighbors[b.Color][p] == 0)
+				return false;
+
+			return this.blocks[p - NS] == b ||
+				   this.blocks[p + NS] == b ||
+				   this.blocks[p - 1] == b ||
+				   this.blocks[p + 1] == b;
+		}
+
+		public void NeighborBlocks(int p, byte c, int maxLib, List<int> anchors)
+		{
+			this.marker.Clear();
+			this.NeighborBlocksWorker(p, c, maxLib, anchors);
+		}
+
+		public void AdjacentBlocks(int p, int maxLib, List<int> anchors)
+		{
+			Debug.Assert(this.Board[p] != Empty);
+			byte opp = OppColor(this.Board[p]);
+
+			this.marker.Clear();
+
+			foreach (int stone in this.blocks[p].Stones)
+			{
+				this.NeighborBlocksWorker(stone, opp, maxLib, anchors);
+			}
+		}
+
+		private void NeighborBlocksWorker(int p, byte c, int maxLib, List<int> anchors)
+		{
+			if (this.numNeighbors[c][p] > 0)
+			{
+				Block b;
+				if ((b = this.blocks[p - NS]) != null &&
+					b.Color == c &&
+					this.marker.NewMark(b.Anchor) &&
+					b.Liberties.Count <= maxLib)
+					anchors.Add(b.Anchor);
+				if ((b = this.blocks[p + NS]) != null &&
+					b.Color == c &&
+					this.marker.NewMark(b.Anchor) &&
+					b.Liberties.Count <= maxLib)
+					anchors.Add(b.Anchor);
+				if ((b = this.blocks[p - 1]) != null &&
+					b.Color == c &&
+					this.marker.NewMark(b.Anchor) &&
+					b.Liberties.Count <= maxLib)
+					anchors.Add(b.Anchor);
+				if ((b = this.blocks[p + 1]) != null &&
+					b.Color == c &&
+					this.marker.NewMark(b.Anchor) &&
+					b.Liberties.Count <= maxLib)
+					anchors.Add(b.Anchor);
+			}
 		}
 
 		/// <summary>
@@ -186,6 +485,7 @@
 			this.LastMove = board.LastMove;
 			this.SecondLastMove = board.SecondLastMove;
 			this.ToMove = board.ToMove;
+			this.Komi = board.Komi;
 
 			for (int i = 0; i < board.Board.Length; i++)
 			{
@@ -276,6 +576,16 @@
             return this.numNeighbors[c][p];
         }
 
+		public LibertyList GetLiberties(int p)
+		{
+			return this.blocks[p].Liberties;
+		}
+
+		public int NumLiberties(int p)
+		{
+			return this.blocks[p].Liberties.Count;
+		}
+
         public int TheLiberty(int p)
         {
             return this.blocks[p].Liberties[0];
@@ -310,7 +620,7 @@
 
 		private void DebugVerify()
 		{
-			return;
+			//return;
 
 			for (int y = 0; y < this.Size; y++)
 			{
@@ -325,6 +635,29 @@
 
 						Debug.Assert(this.blocks[p].Stones.Contains(p));
 						Debug.Assert(this.blocks[p].Liberties.Count != 0);
+
+						if (this.blocks[p].Anchor == p)
+						{
+							foreach (int liberty in this.blocks[p].Liberties)
+							{
+								Debug.Assert(this.Board[liberty] == Empty);
+							}
+							foreach (int stone in this.blocks[p].Stones)
+							{
+								Debug.Assert(this.Board[stone] == this.blocks[stone].Color);
+								for (int i = 0; i < 4; i++)
+								{
+									if (this.Board[stone + DirDelta[i]] == Empty)
+									{
+										Debug.Assert(this.blocks[p].Liberties.Contains(stone + DirDelta[i]));
+									}
+									else if (this.Board[stone + DirDelta[i]] == this.blocks[stone].Color)
+									{
+										Debug.Assert(this.blocks[p].Stones.Contains(stone + DirDelta[i]));
+									}
+								}
+							}
+						}
 					}
 					else
 					{
@@ -628,38 +961,6 @@
 			}
 		}
 
-		private class LibertyList
-		{
-			private List<int> points = new List<int>();
-
-			public int Count { get { return this.points.Count; } }
-			public int this[int i] { get { return this.points[i]; } }
-
-			public void Add(int p)
-			{
-				this.points.Add(p);
-			}
-
-			public void Clear()
-			{
-				this.points.Clear();
-			}
-
-			public void Exclude(int p)
-			{
-				int end = this.points.Count - 1;
-				for (int i = end; i >= 0; i--)
-				{
-					if (this.points[i] == p)
-					{
-						this.points[i] = this.points[end];
-						this.points.RemoveAt(end);
-						return;
-					}
-				}
-			}
-		}
-
 		private class PointMarker
 		{
 			private int current = 1;
@@ -693,6 +994,23 @@
 			public bool Contains(int p)
 			{
 				return this.marks[p] == this.current;
+			}
+		}
+	}
+
+	public class LibertyList : List<int>
+	{
+		public void Exclude(int p)
+		{
+			int end = this.Count - 1;
+			for (int i = end; i >= 0; i--)
+			{
+				if (this[i] == p)
+				{
+					this[i] = this[end];
+					this.RemoveAt(end);
+					return;
+				}
 			}
 		}
 	}

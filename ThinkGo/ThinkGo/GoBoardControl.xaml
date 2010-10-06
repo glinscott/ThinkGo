@@ -7,7 +7,11 @@
 	x:Class="ThinkGo.GoBoardControl"
     Width="480" Height="480">
 
-    <Grid x:Name="LayoutRoot" Background="#FFDCB35C">
+	<!-- Background can be #FFDCB35C as well -->
+    <Grid x:Name="LayoutRoot">
+    	<Grid.Background>
+    		<ImageBrush Stretch="Fill" ImageSource="Images/boardbg.jpg"/>
+    	</Grid.Background>
         <Path x:Name="BoardBackground" Fill="{x:Null}" Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" />
         <Path x:Name="BoardEdge" Fill="{x:Null}" Stroke="Black" StrokeThickness="3" UseLayoutRounding="True"/>
 		<Canvas x:Name="PieceCanvas" />

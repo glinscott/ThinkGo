@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Microsoft.Phone.Controls;
-using System.ComponentModel;
-
-namespace ThinkGo
+﻿namespace ThinkGo
 {
-	public class ThinkGoModel
+	using Microsoft.Phone.Controls;
+	using Microsoft.Phone.Shell;
+	using System.ComponentModel;
+
+	public class ThinkGoModel : INotifyPropertyChanged
 	{
 		public ThinkGoModel()
 		{
@@ -22,11 +12,15 @@ namespace ThinkGo
 		}
 
 		public GoGame ActiveGame { get; private set; }
+
+		public event PropertyChangedEventHandler PropertyChanged;
 	}
 
     public partial class GamePage : PhoneApplicationPage
     {
 		private ThinkGoModel model;
+		private GoGame activeGame;
+		private ApplicationBarIconButton undoButton;
 
         public GamePage()
         {
@@ -36,7 +30,61 @@ namespace ThinkGo
 			{
 				this.model = new ThinkGoModel();
 				this.DataContext = this.model;
+
+				this.model.PropertyChanged += this.OnModelPropertyChanged;
+			}
+
+			this.undoButton = (ApplicationBarIconButton)this.ApplicationBar.Buttons[0];
+
+			this.RefreshGame();
+		}
+
+		private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			this.RefreshGame();
+		}
+
+		private void RefreshGame()
+		{
+			if (this.activeGame != null)
+			{
+				this.activeGame.PropertyChanged -= this.OnActiveGamePropertyChanged;
+			}
+
+			this.activeGame = this.model.ActiveGame;
+
+			this.RefreshState();
+
+			if (this.activeGame != null)
+			{
+				this.activeGame.PropertyChanged += this.OnActiveGamePropertyChanged;
 			}
 		}
+
+		private void RefreshState()
+		{
+			this.undoButton.IsEnabled = this.model.ActiveGame != null && this.model.ActiveGame.CanUndo;
+		}
+
+		private void OnActiveGamePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			this.RefreshState();
+		}
+
+        private void UndoClicked(object sender, System.EventArgs e)
+        {
+			this.model.ActiveGame.UndoMove();
+        }
+
+        private void SettingsClicked(object sender, System.EventArgs e)
+        {
+        	// TODO - popup settings!
+        }
+
+        private void PassClicked(object sender, System.EventArgs e)
+        {
+			// TODO - dialog for pass, resign or cancel
+			this.model.ActiveGame.PlayMove(GoBoard.MovePass);
+        }
     }
 }
