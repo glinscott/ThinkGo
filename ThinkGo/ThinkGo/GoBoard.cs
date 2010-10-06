@@ -620,7 +620,7 @@
 
 		private void DebugVerify()
 		{
-			//return;
+			return;
 
 			for (int y = 0; y < this.Size; y++)
 			{

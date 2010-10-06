@@ -31,8 +31,8 @@ namespace AiHarness
 			GoBoard board = new GoBoard(9);
 			board.Reset();
 
-			this.players[0] = new RandomPlayer(board);
-			this.players[1] = new PlayoutPlayer(board);
+			this.players[GoBoard.Black] = new UctPlayer(board);
+			this.players[GoBoard.White] = new RandomPlayer(board);
 
 			int lastMove = GoBoard.MoveResign, lastLastMove = GoBoard.MoveResign;
 			while (!(lastMove == GoBoard.MovePass && lastLastMove == GoBoard.MovePass))
@@ -121,6 +121,24 @@ namespace AiHarness
 			return moves;
 		}
 	}
+
+    public class UctPlayer : Player
+    {
+        private UctSearch search;
+        
+        public UctPlayer(GoBoard board)
+            : base(board)
+        {
+            this.search = new UctSearch(board);
+        }
+
+        public override int GetMove()
+        {
+            this.search.SearchLoop();
+            List<int> moves = this.search.FindBestSequence();
+            return moves[0];
+        }
+    }
 
     public class CaptureGenerator
     {
@@ -335,6 +353,8 @@ namespace AiHarness
                 move = GoBoard.MovePass;
             }
 
+            Debug.Assert(this.board.IsLegal(move, this.board.ToMove));
+
 			return move;
 		}
 
@@ -453,10 +473,10 @@ namespace AiHarness
 			if (this.moves.Count == 1)
 			{
 				int move = this.moves[0];
-				this.moves.Clear();
 				if (PlayoutPolicy.IsMoveGood(this.board, move))
 					return move;
-				return GoBoard.MoveNull;
+                this.moves.Clear();
+                return GoBoard.MoveNull;
 			}
 
             int i = GoBoard.Random.Next(this.moves.Count);
@@ -471,24 +491,6 @@ namespace AiHarness
 
             return GoBoard.MoveNull;
         }
-	}
-
-	class NoSearchPlayer : Player
-	{
-		private PlayoutPolicy playoutPolicy = new PlayoutPolicy();
-
-		public NoSearchPlayer(GoBoard board)
-			: base(board)
-		{
-		}
-
-		public override int GetMove()
-		{
-			PlayoutPolicy policy = new PlayoutPolicy();
-			policy.Initialize(this.board);
-
-			return policy.GenerateMove();
-		}
 	}
 
 	class UctNode
@@ -507,12 +509,11 @@ namespace AiHarness
 		public UctNode FirstChild { get; set; }
 		public UctNode Next { get; set; }
 		public int NumChildren { get; set; }
-		public int KnowledgeCount { get; set; }
-		public int MoveCount { get; set; }
 		public int PosCount { get; set; }
 
 		public bool HasMean { get { return this.mean.IsDefined; } }
-		public float Mean { get { return this.mean.Mean; } }
+        public int MoveCount { get { return (int)(this.mean.Count + 0.5f); } }
+        public float Mean { get { return this.mean.Mean; } }
 
 		public bool HasRaveValue { get { return this.rave.IsDefined; } }
 		public float RaveCount { get { return this.rave.Count; } }
@@ -618,7 +619,8 @@ namespace AiHarness
 	class UctSearch
 	{
 		private GoBoard board;
-		private GoBoard uctBoard;
+        private GoBoard rootBoard;
+
 		private List<UctNode> nodes = new List<UctNode>();
 		private List<int> sequence = new List<int>();
 		private PlayoutPolicy policy = new PlayoutPolicy();
@@ -635,8 +637,8 @@ namespace AiHarness
 
 		public UctSearch(GoBoard board)
 		{
-			this.board = board;
-			this.uctBoard = new GoBoard(this.board.Size);
+			this.rootBoard = board;
+            this.board = new GoBoard(this.rootBoard.Size);
 
 			this.raveWeightParam1 = 1.0f / this.raveWeightInitial;
 			this.raveWeightParam2 = 1.0f / this.raveWeightInitial;
@@ -649,10 +651,7 @@ namespace AiHarness
 
 		public void SearchLoop()
 		{
-			if (this.rootNode == null)
-			{
-				this.rootNode = new UctNode(new MoveInfo(GoBoard.MoveNull));
-			}
+			this.rootNode = new UctNode(new MoveInfo(GoBoard.MoveNull));
 
 			int numberGames = 0;
 			while (numberGames < 50)
@@ -662,8 +661,46 @@ namespace AiHarness
 			}
 		}
 
+        public List<int> FindBestSequence()
+        {
+            List<int> result = new List<int>();
+            UctNode current = this.rootNode;
+            while (current != null)
+            {
+                current = this.FindBestChild(current);
+                if (current == null)
+                    break;
+                result.Add(current.Move);
+            }
+            return result;
+        }
+
+        private UctNode FindBestChild(UctNode node)
+        {
+            UctNode bestChild = null, current = null;
+            float bestValue = 0.0f;
+
+            current = node.FirstChild;
+            while (current != null)
+            {
+                float value = node.MoveCount;
+                if (bestChild == null || value > bestValue)
+                {
+                    bestChild = current;
+                    bestValue = value;
+                }
+                current = current.Next;
+            }
+
+            return bestChild;
+        }
+
 		public void PlayGame()
 		{
+            this.board.Initialize(this.rootBoard);
+
+            this.nodes.Clear();
+
 			bool isTerminal;
 			bool abortInTree = !this.PlayInTree(out isTerminal);
 
@@ -678,8 +715,6 @@ namespace AiHarness
 			{
 				int inTreeMoveCount = this.sequence.Count;
 
-				this.uctBoard.Initialize(this.board);
-
 				bool abort = abortInTree;
 				if (!abort && !isTerminal)
 					abort = !this.PlayoutGame();
@@ -692,10 +727,10 @@ namespace AiHarness
 				int numMoves = this.sequence.Count;
 				if ((numMoves & 1) != 0)
 					eval = 1 - eval;
-
-				// Take back moves 
-				this.sequence.RemoveRange(inTreeMoveCount, this.sequence.Count - inTreeMoveCount);
 			}
+
+            // Take back moves 
+            this.sequence.Clear();
 
 			this.UpdateTree(eval);
 			// TODO rave!
@@ -714,9 +749,9 @@ namespace AiHarness
 				if (parent != null)
 				{
 					parent.PosCount++;
-					node.AddGameResult(i % 2 == 0 ? eval : inverseEval);
-				}
-			}
+                }
+                node.AddGameResult(i % 2 == 0 ? eval : inverseEval);
+            }
 		}
 
 		private bool PlayInTree(out bool isTerminal)
@@ -727,6 +762,8 @@ namespace AiHarness
 			bool breakAfterSelect = false;
 
 			isTerminal = false;
+
+            this.nodes.Add(this.rootNode);
 
 			while (this.sequence.Count < this.MaxGameLength)
 			{
@@ -744,14 +781,14 @@ namespace AiHarness
 						return true;
 					}
 
-					if (current.MoveCount >= expandThreshold)
-					{
-						this.ScoreMoves(this.perfLegalMoves);
-						this.ExpandNode(current, this.perfLegalMoves);
-						breakAfterSelect = true;
-					}
-					else
-						return true;
+                    if (current.MoveCount >= expandThreshold)
+                    {
+                        this.ScoreMoves(this.perfLegalMoves);
+                        this.ExpandNode(current, this.perfLegalMoves);
+                        breakAfterSelect = true;
+                    }
+                    else
+                        break;
 				}
 
 				current = this.SelectChild(current);
@@ -772,7 +809,7 @@ namespace AiHarness
 		private float Evaluate()
 		{
 			// Score the result
-			float score = this.uctBoard.ScoreSimpleEndPosition(7.5f);
+			float score = this.board.ScoreSimpleEndPosition(7.5f);
 
 			// Score is always in terms of black, but we want to return score relative to player to move.
 			if (board.ToMove == GoBoard.White)
@@ -946,7 +983,7 @@ namespace AiHarness
 
 		private bool PlayoutGame()
 		{
-			this.policy.Initialize(this.uctBoard);
+			this.policy.Initialize(this.board);
 
 			int lastMove = GoBoard.MoveResign, lastLastMove = GoBoard.MoveResign;
 			while (!(lastMove == GoBoard.MovePass && lastLastMove == GoBoard.MovePass))
@@ -961,7 +998,7 @@ namespace AiHarness
 				lastLastMove = lastMove;
 				lastMove = this.policy.GenerateMove();
 
-				this.uctBoard.PlaceStone(lastMove);
+				this.board.PlaceStone(lastMove);
 				this.sequence.Add(lastMove);
 
 				this.policy.OnPlay();
@@ -989,6 +1026,8 @@ namespace AiHarness
 			GoBoard clone = new GoBoard(this.board.Size);
 			PlayoutPolicy policy = new PlayoutPolicy();
 
+            bool invertScore = board.ToMove == GoBoard.White;
+
 			for (int i = 0; i < moves.Count; i++)
             {
 				if (PlayoutPolicy.IsMoveGood(this.board, moves[i]))
@@ -998,6 +1037,7 @@ namespace AiHarness
 
 					policy.Initialize(clone);
 					float value = Playout(clone, policy);
+                    if (invertScore) value = -value;
 
 					if (value > bestMoveScore)
 					{
@@ -1053,10 +1093,6 @@ namespace AiHarness
 
 			float score = board.ScoreSimpleEndPosition(7.5f);
 
-			// Score is always in terms of black, but we want to return score relative to player to move.
-			if (board.ToMove == GoBoard.White)
-				score = -score;
-
 			return score;
 		}
 	}
@@ -1084,4 +1120,22 @@ namespace AiHarness
 			return moves[at];
 		}
 	}
+
+    class NoSearchPlayer : Player
+    {
+        private PlayoutPolicy playoutPolicy = new PlayoutPolicy();
+
+        public NoSearchPlayer(GoBoard board)
+            : base(board)
+        {
+        }
+
+        public override int GetMove()
+        {
+            PlayoutPolicy policy = new PlayoutPolicy();
+            policy.Initialize(this.board);
+
+            return policy.GenerateMove();
+        }
+    }
 }
