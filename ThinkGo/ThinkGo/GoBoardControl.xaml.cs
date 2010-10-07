@@ -352,7 +352,7 @@ using ThinkGo.Ai;
 
 		public GoAIPlayer() : base("Computer")
 		{
-            this.computer = new PlayoutPlayer();
+            this.computer = new UctPlayer();
 		}
 
 		public override bool IsComputer { get { return true; } }

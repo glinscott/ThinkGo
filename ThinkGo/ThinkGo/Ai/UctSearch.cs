@@ -41,7 +41,7 @@
             this.rootNode = new UctNode(new MoveInfo(GoBoard.MoveNull));
 
             int numberGames = 0;
-            while (numberGames < 5000)
+            while (numberGames < 500)
             {
                 this.PlayGame();
                 numberGames++;
@@ -70,7 +70,8 @@
             current = node.FirstChild;
             while (current != null)
             {
-                float value = node.MoveCount;
+                // TODO: movecount?
+                float value = 1.0f - current.Mean;
                 if (bestChild == null || value > bestValue)
                 {
                     bestChild = current;
@@ -112,7 +113,7 @@
                     eval = this.Evaluate();
 
                 int numMoves = this.sequence.Count;
-                if ((numMoves & 1) != 0)
+                if ((numMoves & 1) == 0)
                     eval = 1 - eval;
             }
 
@@ -126,7 +127,6 @@
 
         private void UpdateTree(float eval)
         {
-            // We count all playouts as one result
             float inverseEval = 1.0f - eval;
 
             for (int i = 0; i < this.nodes.Count; i++)
@@ -227,21 +227,22 @@
                 MoveInfo move = moves[i];
                 if (this.board.SelfAtari(moves[i].Point, this.board.ToMove))
                 {
-                    move.Value = 0.1f;
+                    move.Value = 0.9f;
                     move.Count = isSmallBoard ? 9 : 18;
                 }
                 else
                 {
-                    move.Value = 0.5f;
-                    move.Count = isSmallBoard ? 9 : 18;
+                    move.Value = 0.0f;
+                    move.Count = 0;
                 }
                 moves[i] = move;
             }
             if (moves.Count > 0 && moves[moves.Count - 1].Point == GoBoard.MovePass)
             {
                 MoveInfo move = moves[moves.Count - 1];
-                move.Value = 0.1f;
+                move.Value = 0.9f;
                 move.Count = isSmallBoard ? 9 : 18;
+                moves[moves.Count - 1] = move;
             }
         }
 

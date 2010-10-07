@@ -73,6 +73,8 @@
                 move = GoBoard.MovePass;
             }
 
+            // TODO: self-atari correction
+
             Debug.Assert(this.board.IsLegal(move, this.board.ToMove));
 
             return move;

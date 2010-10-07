@@ -1,5 +1,7 @@
 ﻿namespace ThinkGo.Ai
 {
+    using System.Diagnostics;
+
     class UctNode
     {
         private MeanTracker mean = new MeanTracker();
@@ -8,8 +10,8 @@
         public UctNode(MoveInfo moveInfo)
         {
             this.Move = moveInfo.Point;
-            this.mean.Add(moveInfo.Value, moveInfo.Count);
-            this.rave.Add(moveInfo.RaveValue, moveInfo.RaveCount);
+            this.mean.Initialize(moveInfo.Value, moveInfo.Count);
+            this.rave.Initialize(moveInfo.RaveValue, moveInfo.RaveCount);
         }
 
         public int Move { get; private set; }
@@ -57,17 +59,25 @@
             get { return this.count; }
         }
 
+        public void Initialize(float value, float count)
+        {
+            this.mean = value;
+            this.count = count;
+        }
+
         public void Add(float value)
         {
             float count = this.count;
             ++count;
             this.mean += (value - this.mean) / count;
             this.count = count;
+            
+            Debug.Assert(!double.IsNaN(this.mean));
         }
 
         public void Remove(float value)
         {
-            if (this.count > 1)
+            if (this.count > 0.9999)
             {
                 float count = this.count;
                 --count;
@@ -79,6 +89,8 @@
                 this.count = 0.0f;
                 this.mean = 0.0f;
             }
+
+            Debug.Assert(!double.IsNaN(this.mean));
         }
 
         public void Add(float value, float n)
@@ -87,11 +99,13 @@
             count += n;
             this.mean += n * (value - this.mean) / count;
             this.count = count;
+
+            Debug.Assert(!double.IsNaN(this.mean));
         }
 
         public void Remove(float value, float n)
         {
-            if (this.count > n)
+            if (this.count > n - 1e-6)
             {
                 float count = this.count;
                 this.count -= n;
@@ -103,6 +117,8 @@
                 this.mean = 0.0f;
                 this.count = 0.0f;
             }
+
+            Debug.Assert(!double.IsNaN(this.mean));
         }
     }
 

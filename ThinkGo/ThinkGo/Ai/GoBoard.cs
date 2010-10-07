@@ -72,6 +72,14 @@
 			return (y + 1) * NS + x;
 		}
 
+        public string GetPointNotation(int point)
+        {
+            int y = (point / NS) - 1;
+            int x = point % NS;
+
+            return "" + (char)(x + 'A') + (this.Size - y).ToString();
+        }
+
 		public bool IsLegal(int move, byte c)
 		{
 			if (move == MovePass)
@@ -517,7 +525,7 @@
 			this.DebugVerify();
 		}
 
-		public List<int> PlaceStone(int move)
+        public List<int> PlaceStone(int move)
 		{
 			this.CapturedStones.Clear();
 			byte opponent = OppColor(this.ToMove);
@@ -620,7 +628,7 @@
 
 		private void DebugVerify()
 		{
-			return;
+			//return;
 
 			for (int y = 0; y < this.Size; y++)
 			{
