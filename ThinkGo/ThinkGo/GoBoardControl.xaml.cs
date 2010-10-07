@@ -8,6 +8,8 @@
 	using System.Windows.Media;
 	using System.Windows.Shapes;
 	using System.ComponentModel;
+using ThinkGo.Ai;
+    using System.Windows.Threading;
 
 	public partial class GoBoardControl : UserControl
 	{
@@ -15,12 +17,16 @@
 		private GoGame game;
 		private bool isUserDropping;
 		private Rectangle[] pieces;
+        private BackgroundWorker worker = new BackgroundWorker();
 
 		public GoBoardControl()
 		{
 			// Required to initialize variables
 			InitializeComponent();
 			this.Loaded += new RoutedEventHandler(GoBoardControl_Loaded);
+
+            this.worker.DoWork += this.worker_DoWork;
+            this.worker.RunWorkerCompleted += this.worker_RunWorkerCompleted;
 		}
 
 		private void GoBoardControl_Loaded(object sender, RoutedEventArgs e)
@@ -71,6 +77,8 @@
 			this.BoardEdge.Data = geometry;
 
 			this.RefreshBoard();
+
+			this.CheckComputerTurn();
 		}
 
 		private void OnGamePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -78,6 +86,11 @@
 			if (string.Equals(e.PropertyName, "Board"))
 			{
 				this.RefreshBoard();
+			}
+
+			if (string.Equals(e.PropertyName, "Turn"))
+			{
+				this.CheckComputerTurn();
 			}
 		}
 
@@ -121,7 +134,33 @@
 			base.OnMouseMove(e);
 		}
 
-		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        private void PlayMove(int move)
+        {
+            foreach (int deletedPiece in this.game.PlayMove(move))
+            {
+                this.UpdatePiece(deletedPiece);
+            }
+            this.UpdatePiece(move);
+        }
+
+        private void CheckComputerTurn()
+        {
+            if (this.game.Board.ToMove == GoBoard.Black)
+                this.CheckComputerTurn(this.game.BlackPlayer);
+            else
+                this.CheckComputerTurn(this.game.WhitePlayer);
+        }
+
+        private void CheckComputerTurn(GoPlayer player)
+        {
+            GoAIPlayer aiPlayer = player as GoAIPlayer;
+            if (aiPlayer != null)
+            {
+                worker.RunWorkerAsync(aiPlayer);
+            }
+        }
+
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
 		{
 			if (this.isUserDropping)
 			{
@@ -130,11 +169,7 @@
 
 				if (this.game.Board.IsLegal(dropIndex, this.game.Board.ToMove))
 				{
-					foreach (int deletedPiece in this.game.PlayMove(dropIndex))
-					{
-						this.UpdatePiece(deletedPiece);
-					}
-					this.UpdatePiece(dropIndex);
+                    this.PlayMove(dropIndex);
 				}
 
 				this.ReleaseMouseCapture();
@@ -143,7 +178,22 @@
 			base.OnMouseLeftButtonUp(e);
 		}
 
-		private int GetDropIndex(Point point)
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (!e.Cancelled && e.Result is int)
+            {
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                    this.PlayMove((int)e.Result)));
+            }
+        }
+
+        void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            GoAIPlayer player = (GoAIPlayer)e.Argument;
+            e.Result = player.Computer.GetMove();
+        }
+
+        private int GetDropIndex(Point point)
 		{
 			int x = (int)(point.X / this.pieceSize);
 			int y = (int)(point.Y / this.pieceSize);
@@ -169,6 +219,11 @@
 
 		private void UpdatePiece(int index)
 		{
+			if (index < 0)
+			{
+				return;
+			}
+
 			int x = index % GoBoard.NS;
 			int y = (index / GoBoard.NS) - 1;
 			int guiIndex = y * this.game.Board.Size + x;
@@ -196,7 +251,19 @@
 
 			this.WhitePlayer = whitePlayer;
 			this.BlackPlayer = blackPlayer;
+
+            this.InitializeComputer(this.WhitePlayer);
+            this.InitializeComputer(this.BlackPlayer);
 		}
+
+        private void InitializeComputer(GoPlayer player)
+        {
+            GoAIPlayer aiPlayer = player as GoAIPlayer;
+            if (aiPlayer != null)
+            {
+                aiPlayer.Computer.SetBoard(this.Board);
+            }
+        }
 
 		public IEnumerable<int> Moves
 		{
@@ -281,10 +348,14 @@
 
 	public class GoAIPlayer : GoPlayer
 	{
+        private Player computer;
+
 		public GoAIPlayer() : base("Computer")
 		{
+            this.computer = new PlayoutPlayer();
 		}
 
 		public override bool IsComputer { get { return true; } }
+        public Player Computer { get { return this.computer; } }
 	}
 }

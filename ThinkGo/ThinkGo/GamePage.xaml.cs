@@ -8,10 +8,27 @@
 	{
 		public ThinkGoModel()
 		{
-			this.ActiveGame = new GoGame(9, new GoPlayer("Human"), new GoAIPlayer());
 		}
 
+        private static ThinkGoModel instance = null;
+        public static ThinkGoModel Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ThinkGoModel();
+                }
+                return instance;
+            }
+        }
+
 		public GoGame ActiveGame { get; private set; }
+
+        public void NewGame(int boardSize, GoPlayer whitePlayer, GoPlayer blackPlayer)
+        {
+            this.ActiveGame = new GoGame(boardSize, whitePlayer, blackPlayer);
+        }
 
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
@@ -26,13 +43,10 @@
         {
 			InitializeComponent();
 		
-			//if (DesignerProperties.IsInDesignTool)
-			{
-				this.model = new ThinkGoModel();
-				this.DataContext = this.model;
+			this.model = ThinkGoModel.Instance;
+			this.DataContext = this.model;
 
-				this.model.PropertyChanged += this.OnModelPropertyChanged;
-			}
+            this.model.PropertyChanged += this.OnModelPropertyChanged;
 
 			this.undoButton = (ApplicationBarIconButton)this.ApplicationBar.Buttons[0];
 

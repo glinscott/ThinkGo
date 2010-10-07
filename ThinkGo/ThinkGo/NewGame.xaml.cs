@@ -26,6 +26,13 @@ namespace ThinkGo
 
 		private void PlayGame(object sender, System.Windows.RoutedEventArgs e)
 		{
+            int boardSize = 9;
+            switch (this.BoardSizePicker.SelectedIndex)
+            {
+                case 1: boardSize = 13; break;
+                case 2: boardSize = 19; break;
+            }
+            ThinkGoModel.Instance.NewGame(boardSize, new GoPlayer("Gary"), new GoAIPlayer());
 			((INavigate)Application.Current.RootVisual).Navigate(new Uri("/GamePage.xaml", UriKind.Relative));
 		}
 

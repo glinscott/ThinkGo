@@ -63,13 +63,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ai\CaptureGenerator.cs" />
+    <Compile Include="Ai\Players.cs" />
+    <Compile Include="Ai\PlayoutPolicy.cs" />
+    <Compile Include="Ai\RandomMoveGenerator.cs" />
+    <Compile Include="Ai\UctNode.cs" />
+    <Compile Include="Ai\UctSearch.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoardHeader.xaml.cs">
       <DependentUpon>BoardHeader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GoBoard.cs" />
+    <Compile Include="Ai\GoBoard.cs" />
     <Compile Include="GoBoardControl.xaml.cs">
       <DependentUpon>GoBoardControl.xaml</DependentUpon>
     </Compile>
