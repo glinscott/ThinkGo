@@ -12,17 +12,18 @@
 	FontSize="{StaticResource PhoneFontSizeNormal}"
 	Foreground="{StaticResource PhoneForegroundBrush}"
 	SupportedOrientations="Portrait" Orientation="Portrait"
-	shell:SystemTray.IsVisible="True">
+	shell:SystemTray.IsVisible="True"
+    UseLayoutRounding="True">
 	<phone:PhoneApplicationPage.ApplicationBar>
 		<shell:ApplicationBar>
-			<shell:ApplicationBarIconButton IconUri="/icons/appbar.back.rest.png" Text="Undo" Click="UndoClicked"/>
+			<shell:ApplicationBarIconButton IconUri="/icons/appbar.undo.rest.png" Text="Undo" Click="UndoClicked"/>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.check.rest.png" Text="Pass" Click="PassClicked"/>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.feature.settings.rest.png" Text="Settings" Click="SettingsClicked"/>
 		</shell:ApplicationBar>
 	</phone:PhoneApplicationPage.ApplicationBar>
 
 	<!--LayoutRoot is the root grid where all page content is placed-->
-	<Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="LayoutRoot" Background="Transparent" UseLayoutRounding="True">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition/>
@@ -31,8 +32,8 @@
 		<StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="0,0,0,0">
 			<local:ThinkGoTitle Margin="0" d:LayoutOverrides="Height"/>
 		</StackPanel>
-		<StackPanel Margin="0" Grid.Row="1">
-			<local:GoBoardControl DataContext="{Binding ActiveGame}" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="480"/>
+        <StackPanel Margin="0" Grid.Row="1" UseLayoutRounding="True">
+            <local:GoBoardControl DataContext="{Binding ActiveGame}" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="480" UseLayoutRounding="True"/>
 			<local:BoardHeader DataContext="{Binding ActiveGame}" />
 		</StackPanel>
 	</Grid>

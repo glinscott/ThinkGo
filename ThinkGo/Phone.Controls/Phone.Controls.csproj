@@ -49,6 +49,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ListPicker.cs" />
     <Compile Include="PickerBoxDialog.cs" />

@@ -46,16 +46,16 @@ namespace Phone.Controls
         #region constructor
 
         public ListPicker()
-        {                                  
+        {
             // This code should be for release tools
             this.backgroundBrush = (Brush)(Application.Current.Resources["PhoneTextBoxBrush"]);
-                       
-            this.DefaultStyleKey = typeof(ListPicker);           
+
+            this.DefaultStyleKey = typeof(ListPicker);
             base.SelectionChanged += new SelectionChangedEventHandler(ListPicker_SelectionChanged);
             this.Unloaded += new RoutedEventHandler(ListPicker_Unloaded);
             this.SizeChanged += new SizeChangedEventHandler(ListPicker_SizeChanged);
         }
-       
+
 
         void ListPicker_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -79,7 +79,7 @@ namespace Phone.Controls
         #endregion
 
         #region overrides
-       
+
 
         protected override void OnGotFocus(RoutedEventArgs e)
         {
@@ -97,7 +97,7 @@ namespace Phone.Controls
                 this.HandleExpandCollapse();
                 Debug.WriteLine("OnLostFocus after HandleExpandCollapse");
             }
-         
+
         }
 
         public override void OnApplyTemplate()
@@ -136,8 +136,6 @@ namespace Phone.Controls
             e.Handled = true;
 
             base.OnMouseLeftButtonDown(e);
-
-           
         }
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
@@ -151,7 +149,7 @@ namespace Phone.Controls
             this.HandleExpandCollapse();
 
         }
-     
+
 
         public new object SelectedItem
         {
@@ -178,7 +176,7 @@ namespace Phone.Controls
             set
             {
                 this.selectedIndex = value;
-               
+
                 if (!this.animating)
                 {
                     Debug.WriteLine("SelectedIndex before ScrollIntoView");
@@ -194,26 +192,26 @@ namespace Phone.Controls
         #region event handlersca
 
         void ListPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {            
-            if (base.SelectedIndex > -1 && expanded) 
+        {
+            if (base.SelectedIndex > -1 && expanded)
             {
                 selectedIndex = base.SelectedIndex;
             }
-        }       
+        }
 
         #endregion
 
         #region helper methods
 
         private void HandleExpandCollapse()
-        {            
+        {
 
             if (this.Height <= this.itemHeight)
             {
                 // Show border when expanded
                 this.BorderThickness = new Thickness(2);
                 // Create and begin animation   
-                base.SelectedIndex = selectedIndex;      
+                base.SelectedIndex = selectedIndex;
                 this.storyboard = GetDropDownAnimation(this.Height, this.itemHeight * this.Items.Count);
                 this.storyboard.Completed += new EventHandler(storyboard_Completed);
                 this.animating = true;
@@ -226,7 +224,7 @@ namespace Phone.Controls
                 this.BorderThickness = new Thickness(0);
                 // Restore background 
                 this.Background = backgroundBrush;
-               
+
                 // Unselect an item in the listbox              
                 ListBoxItem item = this.ItemContainerGenerator.ContainerFromIndex(this.selectedIndex) as ListBoxItem;
                 if (item != null)
@@ -236,15 +234,25 @@ namespace Phone.Controls
                 // Create and begin animation               
                 this.storyboard = GetDropDownAnimation(this.Height, itemHeight);
                 this.storyboard.Completed += new EventHandler(storyboard_Completed);
-                this.animating = true;                
+                this.animating = true;
                 this.storyboard.Begin();
                 this.expanded = false;
             }
-           
+
+        }
+
+        public void UnselectItem()
+        {
+            foreach (object item in this.Items)
+            {
+                ListBoxItem listBoxItem = this.ItemContainerGenerator.ContainerFromItem(item) as ListBoxItem;
+                if (listBoxItem != null)
+                    listBoxItem.IsSelected = false;
+            }
         }
 
         void storyboard_Completed(object sender, EventArgs e)
-        {            
+        {
             this.storyboard.Completed -= new EventHandler(storyboard_Completed);
             this.animating = false;
             Debug.WriteLine("storyboard_Completed");
@@ -260,10 +268,10 @@ namespace Phone.Controls
             animation.To = to;
             animation.FillBehavior = FillBehavior.HoldEnd;
             animation.EasingFunction = ease;
-         
+
             Storyboard.SetTarget(animation, this);
             Storyboard.SetTargetProperty(animation, new PropertyPath("(ListPicker.Height)"));
-            
+
             Storyboard sb = new Storyboard();
             sb.Children.Add(animation);
             return sb;

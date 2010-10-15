@@ -3,6 +3,18 @@
     using System.Collections.Generic;
     using System.Diagnostics;
 
+	public enum PlayoutMoveType
+	{
+		Random,
+		FillBoard,
+		AtariCapture,
+		AtariDefense,
+		LowLib,
+		Pattern,
+		Capture,
+		Pass
+	}
+
     public class PlayoutPolicy
     {
         private RandomMoveGenerator randomGenerator = new RandomMoveGenerator();
@@ -43,14 +55,17 @@
             {
                 if (this.GenerateAtariCaptureMove())
                 {
+					this.MoveType = PlayoutMoveType.AtariCapture;
                     move = this.SelectRandom();
                 }
                 if (move == GoBoard.MoveNull && this.GenerateAtariDefenseMove())
                 {
-                    move = this.SelectRandom();
+					this.MoveType = PlayoutMoveType.AtariDefense;
+					move = this.SelectRandom();
                 }
                 if (move == GoBoard.MoveNull && this.GenerateLowLibMove(lastMove))
                 {
+					this.MoveType = PlayoutMoveType.LowLib;
                     move = this.SelectRandom();
                 }
 
@@ -59,17 +74,20 @@
 
             if (move == GoBoard.MoveNull)
             {
+				this.MoveType = PlayoutMoveType.Capture;
                 this.captureGenerator.Generate(this.moves);
                 move = this.SelectRandom();
             }
 
             if (move == GoBoard.MoveNull)
             {
+				this.MoveType = PlayoutMoveType.Random;
                 move = this.randomGenerator.SelectRandomMove();
             }
 
             if (move == GoBoard.MoveNull)
             {
+				this.MoveType = PlayoutMoveType.Pass;
                 move = GoBoard.MovePass;
             }
 
@@ -79,6 +97,25 @@
 
             return move;
         }
+
+		public List<int> GetEquivalentBestMoves()
+		{
+			List<int> result = new List<int>();
+			foreach (int move in this.moves)
+			{
+				if (PlayoutPolicy.IsMoveGood(this.board, move))
+				{
+					result.Add(move);
+				}
+			}
+			return result;
+		}
+
+		public PlayoutMoveType MoveType
+		{
+			get;
+			private set;
+		}
 
         private bool GenerateAtariCaptureMove()
         {

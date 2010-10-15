@@ -76,6 +76,7 @@
       <DependentUpon>BoardHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ai\GoBoard.cs" />
+    <Compile Include="GoGame.cs" />
     <Compile Include="GoBoardControl.xaml.cs">
       <DependentUpon>GoBoardControl.xaml</DependentUpon>
     </Compile>
@@ -92,6 +93,7 @@
       <DependentUpon>NewGame.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThinkGoModel.cs" />
     <Compile Include="ThinkGoTitle.xaml.cs">
       <DependentUpon>ThinkGoTitle.xaml</DependentUpon>
     </Compile>
@@ -143,7 +145,7 @@
     </Content>
     <Resource Include="Images\Go_b.png" />
     <Resource Include="Images\Go_w.png" />
-    <Content Include="icons\appbar.back.rest.png">
+    <Content Include="icons\appbar.undo.rest.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\appbar.check.rest.png">
@@ -153,6 +155,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Images\boardbg.jpg" />
+    <Content Include="issues.txt" />
     <Content Include="SplashScreenImage.jpg" />
     <Resource Include="Images\Title.png" />
     <Resource Include="Title.png" />

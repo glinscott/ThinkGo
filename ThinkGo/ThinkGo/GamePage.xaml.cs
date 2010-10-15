@@ -4,35 +4,6 @@
 	using Microsoft.Phone.Shell;
 	using System.ComponentModel;
 
-	public class ThinkGoModel : INotifyPropertyChanged
-	{
-		public ThinkGoModel()
-		{
-		}
-
-        private static ThinkGoModel instance = null;
-        public static ThinkGoModel Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new ThinkGoModel();
-                }
-                return instance;
-            }
-        }
-
-		public GoGame ActiveGame { get; private set; }
-
-        public void NewGame(int boardSize, GoPlayer whitePlayer, GoPlayer blackPlayer)
-        {
-            this.ActiveGame = new GoGame(boardSize, whitePlayer, blackPlayer);
-        }
-
-		public event PropertyChangedEventHandler PropertyChanged;
-	}
-
     public partial class GamePage : PhoneApplicationPage
     {
 		private ThinkGoModel model;
@@ -82,6 +53,11 @@
 
 		private void OnActiveGamePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+            if (e.PropertyName == "GameOver")
+            {
+                this.NavigationService.GoBack();
+            }
+
 			this.RefreshState();
 		}
 

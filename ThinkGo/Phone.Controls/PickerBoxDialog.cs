@@ -52,7 +52,7 @@ namespace Phone.Controls
         public PickerBoxDialog()
         {
             this.DefaultStyleKey = typeof(PickerBoxDialog);
-            TiltEffect.SetIsTiltEnabled(this, true);
+            //TiltEffect.SetIsTiltEnabled(this, true);
         }
 
         #endregion
@@ -284,7 +284,14 @@ namespace Phone.Controls
             CloseStoryboard.Children.Clear();
 
             this.ChildWindowPopup.IsOpen = false;
+
+            if (this.AnimationFinished != null)
+            {
+                this.AnimationFinished(this, EventArgs.Empty);
+            }
         }
+
+        public event EventHandler AnimationFinished;
 
         private void PrepareOpenStoryboard()
         {
@@ -323,6 +330,9 @@ namespace Phone.Controls
 
             beginTime += 30;
 
+            DoubleAnimation listBoxAni = CreateOpacityAnimation(this.listBox, 0, 1, 100, beginTime);
+            OpenStoryboard.Children.Add(listBoxAni);
+
             VirtualizingStackPanel panel = this.listBox.GetVisualDescendents<VirtualizingStackPanel>(true).FirstOrDefault();
             this.visibleItems = panel.GetVisualDescendents<ListBoxItem>(true).GetVisibleItems(listBox, Orientation.Vertical).ToList();
 
@@ -351,6 +361,7 @@ namespace Phone.Controls
                     }                  
                    
                     item.CacheMode = new BitmapCache();
+                    item.Opacity = 0;
                     // Create open animation
                     animationOpen = CreateRotationAnimation(item, -90, 0, 200, beginTime);
                     animationOpacity = CreateOpacityAnimation(item, 0, 1, 200, beginTime);

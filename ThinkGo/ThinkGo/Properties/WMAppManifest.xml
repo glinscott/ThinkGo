@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.0">
-  <App xmlns="" ProductID="{1b45a66b-cc27-4911-8946-a12cc0e24fce}" Title="ThinkGo" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="ThinkGo author" Description="Sample description" Publisher="ThinkGo">
+  <App xmlns="" ProductID="{1b45a66b-cc27-4911-8946-a12cc0e24fce}" Title="ThinkGo" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.games" Author="Gary Linscott" Description="Learn and play Go" Publisher="ForwardCoding">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_CAMERA" />

@@ -9,9 +9,7 @@
 
     <Style TargetType="local:ListPicker">
         <Setter Property="Background" Value="{StaticResource PhoneTextBoxBrush}"/>
-        <!--This resource doesn't exist in beta. You'll need to uncomment this for release tools. -->
         <Setter Property="Foreground" Value="{StaticResource PhoneTextBoxForegroundBrush}"/>
-        <Setter Property="Foreground" Value="Black"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -51,7 +49,7 @@
 
                         <!--ContentPanel - place additional content here-->
                         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0"  >
-                            <ListBox Name="listBox" >
+                            <ListBox Name="listBox" Opacity="0">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel x:Name="item" Orientation="Horizontal" Margin="5, 24, 0, 24">                                            

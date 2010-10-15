@@ -5,16 +5,16 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	x:Class="ThinkGo.GoBoardControl"
-    Width="480" Height="480">
+    Width="480" Height="480" UseLayoutRounding="True">
 
 	<!-- Background can be #FFDCB35C as well -->
-    <Grid x:Name="LayoutRoot">
-    	<Grid.Background>
+    <Canvas x:Name="LayoutRoot" Width="480" Height="480" UseLayoutRounding="True">
+    	<Canvas.Background>
     		<ImageBrush Stretch="Fill" ImageSource="Images/boardbg.jpg"/>
-    	</Grid.Background>
-        <Path x:Name="BoardBackground" Fill="{x:Null}" Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" />
-        <Path x:Name="BoardEdge" Fill="{x:Null}" Stroke="Black" StrokeThickness="3" UseLayoutRounding="True"/>
+    	</Canvas.Background>
+        <Path x:Name="BoardBackground" Fill="{x:Null}" Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" Stretch="None" Width="480" Height="480" />
+        <Path x:Name="BoardEdge" Fill="{x:Null}" Stroke="Black" StrokeThickness="3" UseLayoutRounding="True" Stretch="None" Width="480" Height="480"/>
 		<Canvas x:Name="PieceCanvas" />
         <Path x:Name="DropTemp" Fill="{x:Null}" Stroke="Blue" StrokeThickness="3" />
-    </Grid>
+    </Canvas>
 </UserControl>

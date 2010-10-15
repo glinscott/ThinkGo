@@ -12,6 +12,7 @@
             this.Move = moveInfo.Point;
             this.mean.Initialize(moveInfo.Value, moveInfo.Count);
             this.rave.Initialize(moveInfo.RaveValue, moveInfo.RaveCount);
+			this.HasBeenVisited = false;
         }
 
         public int Move { get; private set; }
@@ -28,6 +29,8 @@
         public float RaveCount { get { return this.rave.Count; } }
         public float RaveValue { get { return this.rave.Mean; } }
 
+		public bool HasBeenVisited { get; private set; }
+
         public bool IsProven
         {
             get { return false; /* TODO! */ }
@@ -36,6 +39,7 @@
         public void AddGameResult(float eval)
         {
             this.mean.Add(eval);
+			this.HasBeenVisited = true;
         }
     }
 

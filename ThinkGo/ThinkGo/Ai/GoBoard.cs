@@ -72,10 +72,16 @@
 			return (y + 1) * NS + x;
 		}
 
+		public static void GetPointXY(int p, out int x, out int y)
+		{
+			y = (p / NS) - 1;
+			x = p % NS;
+		}
+
         public string GetPointNotation(int point)
         {
-            int y = (point / NS) - 1;
-            int x = point % NS;
+            int x, y;
+			GetPointXY(point, out x, out y);
 
             return "" + (char)(x + 'A') + (this.Size - y).ToString();
         }
@@ -628,7 +634,7 @@
 
 		private void DebugVerify()
 		{
-			//return;
+			return;
 
 			for (int y = 0; y < this.Size; y++)
 			{

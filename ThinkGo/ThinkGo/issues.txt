@@ -1,0 +1,9 @@
+﻿- Selecting AI name when changing time (remains blue)
+- Need to add progress bar for AI think
+- Need to add basic tutorial content
+- Need to add basic settings page
+- Handicap settings
+- Game over dialog
+- Suggest move option
+- Scoring display at endgame
+- Half decent splash screen
