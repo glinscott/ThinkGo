@@ -5,7 +5,6 @@
     public enum MoveMarkerOption
     {
         None,
-        Dot,
         Text1,
         Text2,
         TextAll

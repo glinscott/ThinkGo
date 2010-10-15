@@ -65,27 +65,27 @@
 	<Grid x:Name="LayoutRoot" Background="Transparent">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto" MinHeight="97"/>
-			<RowDefinition Height="Auto" MinHeight="99"/>
-			<RowDefinition Height="Auto" MinHeight="87"/>
-			<RowDefinition Height="Auto" MinHeight="309"/>
+			<RowDefinition Height="Auto" MinHeight="103"/>
+			<RowDefinition Height="Auto" MinHeight="106"/>
+			<RowDefinition Height="Auto" MinHeight="106"/>
+			<RowDefinition Height="Auto" MinHeight="277"/>
 		</Grid.RowDefinitions>
-		<Button Content="Start" VerticalAlignment="Bottom" Margin="120,0,120,49" d:LayoutOverrides="Width" Click="PlayGame" Grid.Row="4"/>
+		<Button Content="Start" VerticalAlignment="Bottom" Margin="0,0,0,49" Click="PlayGame" Grid.Row="4"/>
         
-        <TextBlock Margin="0,-4,214,0" TextWrapping="Wrap" Text="Board Size" Height="34" Grid.Row="3" VerticalAlignment="Top"/>
-        <pc:ListPicker x:Name="BoardSizePicker" Margin="0,26,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="3">
+        <TextBlock Margin="12,-3,206,0" TextWrapping="Wrap" Text="Board Size" Height="34" Grid.Row="3" VerticalAlignment="Top"/>
+        <pc:ListPicker x:Name="BoardSizePicker" Margin="12,28,12,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="3">
             <pc:ListPicker.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding}" Margin="8,0,0,0" />
                 </DataTemplate>
             </pc:ListPicker.ItemTemplate>
         </pc:ListPicker>
-        <Image Source="Images/Go_b.png" Width="32" HorizontalAlignment="Left" Margin="1,3,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="1"/>
-        <Image Source="Images/Go_w.png" Width="32" HorizontalAlignment="Left" Margin="1,5,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="2"/>
-        <TextBlock HorizontalAlignment="Left" Height="31" Margin="37,5,0,0" TextWrapping="Wrap" Text="Black Player" VerticalAlignment="Top" Width="131" Grid.Row="1"/>
-        <TextBlock HorizontalAlignment="Left" Margin="37,7,0,0" TextWrapping="Wrap" Text="White Player" VerticalAlignment="Top" Grid.Row="2"/>
-        <TextBlock Margin="0,-3,214,0" TextWrapping="Wrap" Grid.Row="4" Height="34" VerticalAlignment="Top"><Run Text="Handicap"/><LineBreak/><Run/></TextBlock>
-        <pc:ListPicker x:Name="BlackPlayerPicker" Margin="0,39,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="1">
+        <Image Source="Images/Go_b.png" Width="32" HorizontalAlignment="Left" Margin="12,3,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="1"/>
+        <Image Source="Images/Go_w.png" Width="32" HorizontalAlignment="Left" Margin="12,5,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="2"/>
+        <TextBlock HorizontalAlignment="Left" Height="31" Margin="49,5,0,0" TextWrapping="Wrap" Text="Black Player" VerticalAlignment="Top" Width="131" Grid.Row="1"/>
+        <TextBlock HorizontalAlignment="Left" Margin="49,7,0,0" TextWrapping="Wrap" Text="White Player" VerticalAlignment="Top" Grid.Row="2"/>
+        <TextBlock Margin="12,-1,206,0" TextWrapping="Wrap" Grid.Row="4" Height="34" VerticalAlignment="Top"><Run Text="Handicap"/><LineBreak/><Run/></TextBlock>
+        <pc:ListPicker x:Name="BlackPlayerPicker" Margin="12,41,12,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="1">
         	<pc:ListPicker.ItemTemplate>
         		<DataTemplate>
         			<Grid Width="390">
@@ -96,7 +96,7 @@
         		</DataTemplate>
         	</pc:ListPicker.ItemTemplate>
         </pc:ListPicker>
-		<pc:ListPicker x:Name="WhitePlayerPicker" Margin="0,41,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="2">
+		<pc:ListPicker x:Name="WhitePlayerPicker" Margin="12,43,12,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="2">
 			<pc:ListPicker.ItemTemplate>
 				<DataTemplate>
 					<Grid Width="390">

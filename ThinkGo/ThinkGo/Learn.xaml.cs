@@ -17,5 +17,20 @@ namespace ThinkGo
 			// Required to initialize variables
 			InitializeComponent();
 		}
+
+		private void TutorialClicked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			
+		}
+
+		private void HelpClicked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			// TODO: Add event handler implementation here.
+		}
+
+		private void OnlineClicked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			// TODO: Add event handler implementation here.
+		}
 	}
 }

@@ -22,6 +22,9 @@
         
         private List<TextBlock> moveNumbers = new List<TextBlock>();
 
+        public event EventHandler StartedThinking;
+        public event EventHandler DoneThinking;
+
 		public GoBoardControl()
 		{
 			// Required to initialize variables
@@ -173,6 +176,7 @@
                 case MoveMarkerOption.TextAll: numTextBlocks = 1000; break;
             }
 
+            Dictionary<int, bool> hit = new Dictionary<int,bool>(100);
             int end = this.game.Moves.Count - 1;
             for (int i = end; i >= Math.Max(0, end - numTextBlocks + 1); i--)
             {
@@ -182,6 +186,10 @@
                 byte color = this.game.Board.Board[this.game.Moves[i]];
                 if (color == GoBoard.Empty)
                     continue;
+
+                if (hit.ContainsKey(this.game.Moves[i]))
+                    continue;
+                hit[this.game.Moves[i]] = true;
 
                 TextBlock textBlock = new TextBlock();
                 this.moveNumbers.Add(textBlock);
@@ -214,6 +222,11 @@
             {
                 this.isThinking = true;
                 worker.RunWorkerAsync(aiPlayer);
+
+                if (this.StartedThinking != null)
+                {
+                    this.StartedThinking(this, EventArgs.Empty);
+                }
             }
         }
 
@@ -243,6 +256,11 @@
                     {
                         this.isThinking = false;
                         this.PlayMove((int)e.Result);
+
+                        if (this.DoneThinking != null)
+                        {
+                            this.DoneThinking(this, EventArgs.Empty);
+                        }
                     }
                 ));
             }

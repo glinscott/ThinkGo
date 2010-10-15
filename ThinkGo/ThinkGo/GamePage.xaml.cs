@@ -1,8 +1,10 @@
 ﻿namespace ThinkGo
 {
-	using Microsoft.Phone.Controls;
-	using Microsoft.Phone.Shell;
-	using System.ComponentModel;
+    using System;
+    using System.ComponentModel;
+    using System.Windows;
+    using Microsoft.Phone.Controls;
+    using Microsoft.Phone.Shell;
 
     public partial class GamePage : PhoneApplicationPage
     {
@@ -22,7 +24,22 @@
 			this.undoButton = (ApplicationBarIconButton)this.ApplicationBar.Buttons[0];
 
 			this.RefreshGame();
+
+            this.GoBoardControl.StartedThinking += new System.EventHandler(GoBoardControl_StartedThinking);
+            this.GoBoardControl.DoneThinking += new System.EventHandler(GoBoardControl_DoneThinking);
 		}
+
+        void GoBoardControl_DoneThinking(object sender, System.EventArgs e)
+        {
+            this.ThinkingBar.Visibility = Visibility.Collapsed;
+        }
+
+        void GoBoardControl_StartedThinking(object sender, System.EventArgs e)
+        {
+            this.ThinkingBar.IsIndeterminate = false;
+            this.ThinkingBar.IsIndeterminate = true;
+            this.ThinkingBar.Visibility = Visibility.Visible;
+        }
 
 		private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -68,7 +85,7 @@
 
         private void SettingsClicked(object sender, System.EventArgs e)
         {
-        	// TODO - popup settings!
+            this.NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
         }
 
         private void PassClicked(object sender, System.EventArgs e)

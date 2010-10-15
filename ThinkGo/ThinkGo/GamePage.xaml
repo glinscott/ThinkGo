@@ -33,8 +33,9 @@
 			<local:ThinkGoTitle Margin="0" d:LayoutOverrides="Height"/>
 		</StackPanel>
         <StackPanel Margin="0" Grid.Row="1" UseLayoutRounding="True">
-            <local:GoBoardControl DataContext="{Binding ActiveGame}" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="480" UseLayoutRounding="True"/>
+            <local:GoBoardControl x:Name="GoBoardControl" DataContext="{Binding ActiveGame}" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="480" UseLayoutRounding="True"/>
 			<local:BoardHeader DataContext="{Binding ActiveGame}" />
+			<ProgressBar x:Name="ThinkingBar" Height="43" Margin="8,-25,8,0" VerticalAlignment="Bottom" IsIndeterminate="True" Visibility="Collapsed"/>
 		</StackPanel>
 	</Grid>
 </phone:PhoneApplicationPage>

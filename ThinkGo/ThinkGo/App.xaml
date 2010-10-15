@@ -19,5 +19,12 @@
         <ImageBrush x:Key="BlackPiece" ImageSource="Images/Go_b.png" />
         <ImageBrush x:Key="WhitePiece" ImageSource="Images/Go_w.png" />
 		<system:String x:Key="RightArrowData">M194.15378,277.29068 L168.0623,297.11606 L232.36528,330.36169 L166.9142,367.2674 L191.50041,384.8139 L288.22894,329.67957 z</system:String>
+		
+		<DataTemplate x:Name="MultiLineButtonTemplate">
+			<StackPanel>
+				<TextBlock Text="{Binding Line1}" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top" Padding="0,3,0,0" />
+				<TextBlock Text="{Binding Line2}" Opacity="0.65" HorizontalAlignment="Left" FontSize="{StaticResource PhoneFontSizeSmall}" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,2,0,7"/>
+			</StackPanel>
+		</DataTemplate>
     </Application.Resources>
 </Application>

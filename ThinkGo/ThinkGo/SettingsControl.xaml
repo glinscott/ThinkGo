@@ -1,0 +1,23 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit" xmlns:Phone_Controls="clr-namespace:Phone.Controls;assembly=Phone.Controls"
+	mc:Ignorable="d"
+	x:Class="ThinkGo.SettingsControl"
+	d:DesignWidth="432" d:DesignHeight="592">
+
+	<Grid x:Name="LayoutRoot" Background="Transparent">
+		<toolkit:ToggleSwitch VerticalAlignment="Top" Header="Sound"/>
+		<toolkit:ToggleSwitch Margin="0,116,0,0" Header="Show Crosshairs" VerticalAlignment="Top"/>
+		<TextBlock Margin="12,233,185,0" TextWrapping="Wrap" Text="Number previous moves" Height="34" VerticalAlignment="Top"/>
+		<Phone_Controls:ListPicker x:Name="NumberMovesPicker" Margin="12,269,12,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black">
+			<Phone_Controls:ListPicker.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding}" Margin="8,0,0,0" />
+				</DataTemplate>
+			</Phone_Controls:ListPicker.ItemTemplate>
+		</Phone_Controls:ListPicker>
+	</Grid>
+</UserControl>
