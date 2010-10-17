@@ -53,6 +53,11 @@
             this.search = new UctSearch(board);
         }
 
+        public void SetNumSimulations(int numSimulations)
+        {
+            this.search.SetNumSimulations(numSimulations);
+        }
+
         public override int GetMove()
         {
             this.search.SearchLoop();
@@ -144,7 +149,7 @@
                 }
             }
 
-            float score = board.ScoreSimpleEndPosition(7.5f);
+            float score = board.ScoreSimpleEndPosition(board.Komi);
 
             return score;
         }

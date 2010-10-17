@@ -65,7 +65,7 @@
 		public int[] Prisoners = new int[2];
 		public byte ToMove;
 		public List<int> CapturedStones = new List<int>();
-		public float Komi;
+		public float Komi = 7.5f;
 
 		public static int GeneratePoint(int x, int y)
 		{

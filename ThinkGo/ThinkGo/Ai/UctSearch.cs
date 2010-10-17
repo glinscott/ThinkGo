@@ -13,15 +13,18 @@
         private List<int> sequence = new List<int>();
         private PlayoutPolicy policy = new PlayoutPolicy();
         private UctNode rootNode = null;
+        private byte ourColor;
+        private int numSimulations = 1000;
 
         private float biasTermConstant = 0.7f;
-        private float raveWeightInitial = 0.9f;
-        private float raveWeightFinal = 20000.0f;
+        private float raveWeightInitial = 1.0f;
+        private float raveWeightFinal = 5000.0f;
         private float raveWeightParam1, raveWeightParam2;
         private float firstPlayUrgency = 10000.0f;
 
         // Perf. variables
         private List<MoveInfo> perfLegalMoves = new List<MoveInfo>(100);
+        private int[] perfFirstPlay = new int[512], perfFirstPlayOpp = new int[512];
 
         public UctSearch(GoBoard board)
         {
@@ -29,7 +32,7 @@
             this.board = new GoBoard(this.rootBoard.Size);
 
             this.raveWeightParam1 = 1.0f / this.raveWeightInitial;
-            this.raveWeightParam2 = 1.0f / this.raveWeightInitial;
+            this.raveWeightParam2 = 1.0f / this.raveWeightFinal;
         }
 
         public int MaxGameLength
@@ -37,12 +40,18 @@
             get { return 3 * this.board.Size * this.board.Size; }
         }
 
+        public void SetNumSimulations(int numSimulations)
+        {
+            this.numSimulations = numSimulations;
+        }
+
         public void SearchLoop()
         {
+            this.ourColor = this.rootBoard.ToMove;
             this.rootNode = new UctNode(new MoveInfo(GoBoard.MoveNull));
 
             int numberGames = 0;
-            while (numberGames < 1000)
+            while (numberGames < this.numSimulations)
             {
                 this.PlayGame();
                 numberGames++;
@@ -71,7 +80,12 @@
             current = node.FirstChild;
             while (current != null)
             {
-				//Console.WriteLine(this.board.GetPointNotation(current.Move) + " " + current.MoveCount + " " + current.Mean);
+#if NO
+                if (this.hackIsroot)
+                {
+                    Console.WriteLine(this.board.GetPointNotation(current.Move) + " " + current.MoveCount + " " + this.GetValueEstimate(true, current));
+                }
+#endif
                 int value = current.MoveCount;
                 if (bestChild == null || (value > bestValue && current.HasBeenVisited))
                 {
@@ -102,8 +116,6 @@
             }
             else
             {
-                int inTreeMoveCount = this.sequence.Count;
-
                 bool abort = abortInTree;
                 if (!abort && !isTerminal)
                     abort = !this.PlayoutGame();
@@ -113,17 +125,40 @@
                 else
                     eval = this.Evaluate();
 
-                int numMoves = this.sequence.Count;
-                if ((numMoves & 1) != 0)
+                if (this.board.ToMove != this.ourColor)
                     eval = 1 - eval;
             }
 
+            this.UpdateTree(eval);
+            this.UpdateRaveValues(eval);
+
+#if NO
+            if (this.sequence[0] == 26)
+            {
+                if (eval > 0.5)
+                {
+                    Console.WriteLine(eval);
+                }
+            }
+                // move = 26
+                UctNode child = this.rootNode.FirstChild;
+                UctNode badMove = null, goodMove = null;
+                while (child != null)
+                {
+                    if (child.Move == 26)
+                        badMove = child;
+                    else if (child.Move == 24)
+                        goodMove = child;
+                    child = child.Next;
+                }
+                if (goodMove != null)
+                {
+                    Console.WriteLine(goodMove.RaveValue + " " + goodMove.RaveCount);
+                }
+#endif
+
             // Take back moves 
             this.sequence.Clear();
-
-            this.UpdateTree(eval);
-            // TODO rave!
-            // this.UpdateRaveValues();
         }
 
         private void UpdateTree(float eval)
@@ -138,7 +173,77 @@
                 {
                     parent.PosCount++;
                 }
+                // Counter-intuitive, but node[0] == root node w/ no move, not our first move
                 node.AddGameResult(i % 2 != 0 ? eval : inverseEval);
+            }
+        }
+
+        private void UpdateRaveValues(float eval)
+        {
+            if (this.sequence.Count == 0)
+                return;
+
+            int numNodes = this.nodes.Count;
+            bool opp = this.board.ToMove == this.ourColor;
+
+            for (int i = 0 ; i < this.board.Board.Length; i++)
+            {
+                this.perfFirstPlay[i] = int.MaxValue;
+                this.perfFirstPlayOpp[i] = int.MaxValue;
+            }
+
+            for (int i = this.sequence.Count - 1; i >= 0; i--)
+            {
+                int move = this.sequence[i];
+                if (move >= 0)
+                {
+                    if (opp)
+                    {
+                        this.perfFirstPlayOpp[move] = Math.Min(this.perfFirstPlayOpp[move], i);
+                        if (i < numNodes)
+                        {
+                            this.UpdateRaveValues(1.0f - eval, i, this.perfFirstPlayOpp);
+                        }
+                    }
+                    else
+                    {
+                        this.perfFirstPlay[move] = Math.Min(this.perfFirstPlay[move], i);
+                        if (i < numNodes)
+                        {
+                            this.UpdateRaveValues(eval, i, this.perfFirstPlay);
+                        }
+                    }
+                }
+                opp = !opp;
+            }
+        }
+
+        private void UpdateRaveValues(float eval, int i, int[] firstPlay)
+        {
+            UctNode node = this.nodes[i];
+            if (node.NumChildren == 0)
+                return;
+
+            int length = this.sequence.Count;
+            UctNode child = node.FirstChild;
+            while (child != null)
+            {
+                int move = child.Move;
+                if (move < 0)
+                {
+                    child = child.Next;
+                    continue;
+                }
+                int first = firstPlay[move];
+                if (first == int.MaxValue)
+                {
+                    child = child.Next;
+                    continue;
+                }
+
+                float weight = 2.0f - (float)(first - i) / (length - i);
+                child.AddRaveValue(eval, weight);
+                child = child.Next;
             }
         }
 
@@ -195,7 +300,7 @@
         private float Evaluate()
         {
             // Score the result
-            float score = this.board.ScoreSimpleEndPosition(7.5f);
+            float score = this.board.ScoreSimpleEndPosition(board.Komi);
 
             // Score is always in terms of black, but we want to return score relative to player to move.
             if (board.ToMove == GoBoard.White)
@@ -207,11 +312,15 @@
 
             if (score > 1e-6f)
             {
-                return scoreModification * score * invMaxScore + 0.5f;
+                return 
+                    1 - scoreModification
+                    + scoreModification * score * invMaxScore;
             }
             else if (score < -1e-6f)
             {
-                return scoreModification * score * invMaxScore + 0.5f;
+                return
+                    scoreModification
+                    + scoreModification * score * invMaxScore;
             }
             // Draw!
             return 0.5f;
@@ -278,15 +387,17 @@
 				for (int i = 0; i < moves.Count - 1; i++)
 				{
 					MoveInfo move = moves[i];
-					if (policyMoves.Contains(move.Point))
-						move.Value = 1.0f;
 					if (this.board.SelfAtari(move.Point, this.board.ToMove))
 						move.Value = 0.1f;
 					else if (atariMoves.Contains(move.Point))
 						move.Value = 0.8f;
 					else
 						move.Value = 0.4f;
-					move.Count = isSmallBoard ? 9 : 18;
+                    
+                    if (policyMoves.Contains(move.Point))
+                        move.Value = 1.0f;
+
+                    move.Count = isSmallBoard ? 9 : 18;
 					moves[i] = move;
 				}
 			}
@@ -312,7 +423,7 @@
 					int dist = Math.Abs(tx - x) + Math.Abs(ty - y); // TODO: use common fate graph distance here
 					switch (dist)
 					{
-						case 1: move.Value += 0.3f; break;
+						case 1: move.Value += 0.4f; break;
 						case 2: move.Value += 0.3f; break;
 						case 3: move.Value += 0.2f; break;
 						default: move.Value += 0.1f; break;
@@ -388,7 +499,7 @@
 
         private UctNode SelectChild(UctNode node)
         {
-            bool useRave = true; // TODO!
+            bool useRave = true;
 
             int posCount = node.PosCount;
             if (posCount == 0)
@@ -421,6 +532,7 @@
                 return value;
             else
             {
+                Debug.Assert(child.MoveCount <= Math.Pow(Math.E, logPosCount) + 0.5);
                 return value + this.biasTermConstant * (float)Math.Sqrt(logPosCount / (child.MoveCount + 1));
             }
         }

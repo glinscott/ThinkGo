@@ -49,9 +49,11 @@
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\Players.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\PlayoutPolicy.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\RandomMoveGenerator.cs" />
+    <Compile Include="..\..\ThinkGo\ThinkGo\Ai\Sgf.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\UctNode.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\UctSearch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\PlayoutTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -41,6 +41,11 @@
             this.mean.Add(eval);
 			this.HasBeenVisited = true;
         }
+
+        public void AddRaveValue(float eval, float weight)
+        {
+            this.rave.Add(eval, weight);
+        }
     }
 
     struct MeanTracker
@@ -71,6 +76,8 @@
 
         public void Add(float value)
         {
+            Debug.Assert(value > -1e-6 && value < 1.000001);
+
             float count = this.count;
             ++count;
             this.mean += (value - this.mean) / count;

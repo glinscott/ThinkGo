@@ -9,8 +9,8 @@
 	d:DesignWidth="432" d:DesignHeight="592">
 
 	<Grid x:Name="LayoutRoot" Background="Transparent">
-		<toolkit:ToggleSwitch VerticalAlignment="Top" Header="Sound"/>
-		<toolkit:ToggleSwitch Margin="0,116,0,0" Header="Show Crosshairs" VerticalAlignment="Top"/>
+		<toolkit:ToggleSwitch VerticalAlignment="Top" Header="Sound" IsChecked="{Binding SoundEnabled, Mode=TwoWay}" />
+		<toolkit:ToggleSwitch Margin="0,116,0,0" Header="Show Crosshairs" VerticalAlignment="Top" IsChecked="{Binding ShowDropCursor, Mode=TwoWay}" />
 		<TextBlock Margin="12,233,185,0" TextWrapping="Wrap" Text="Number previous moves" Height="34" VerticalAlignment="Top"/>
 		<Phone_Controls:ListPicker x:Name="NumberMovesPicker" Margin="12,269,12,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black">
 			<Phone_Controls:ListPicker.ItemTemplate>

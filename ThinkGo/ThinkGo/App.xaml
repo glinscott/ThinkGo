@@ -26,5 +26,23 @@
 				<TextBlock Text="{Binding Line2}" Opacity="0.65" HorizontalAlignment="Left" FontSize="{StaticResource PhoneFontSizeSmall}" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,2,0,7"/>
 			</StackPanel>
 		</DataTemplate>
+		
+		<Style x:Key="ListBoxButton" TargetType="Button">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="{x:Null}"/>
+			<Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
+			<Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilyLight}"/>
+			<Setter Property="FontSize" Value="{StaticResource PhoneFontSizeLarge}"/>
+			<Setter Property="Padding" Value="0,10"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Grid Background="Transparent" HorizontalAlignment="Stretch">
+							<ContentControl x:Name="ContentContainer" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
     </Application.Resources>
 </Application>

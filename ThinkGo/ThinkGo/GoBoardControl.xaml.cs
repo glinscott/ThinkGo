@@ -30,14 +30,24 @@
 			// Required to initialize variables
 			InitializeComponent();
 			this.Loaded += new RoutedEventHandler(GoBoardControl_Loaded);
+            this.Unloaded += new RoutedEventHandler(GoBoardControl_Unloaded);
 
             this.worker.DoWork += this.worker_DoWork;
             this.worker.RunWorkerCompleted += this.worker_RunWorkerCompleted;
 		}
 
+        void GoBoardControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (this.game != null)
+            {
+                this.game.PropertyChanged -= this.OnGamePropertyChanged; 
+                this.game = null;
+            }
+        }
+
 		private void GoBoardControl_Loaded(object sender, RoutedEventArgs e)
 		{
-			this.game = (GoGame)this.DataContext;
+            this.game = ThinkGoModel.Instance.ActiveGame;
 			this.game.PropertyChanged += this.OnGamePropertyChanged;
 
             int boardSize = this.game.Board.Size;
@@ -45,6 +55,7 @@
             this.pieceSize = (int)(this.ActualWidth / boardSize);
 			this.edgeOffset = (int)(this.pieceSize / 2);
 
+            this.PieceCanvas.Children.Clear();
 			this.pieces = new Rectangle[boardSize * boardSize];
 			for (int y = 0; y < boardSize; y++)
 			{
@@ -234,6 +245,8 @@
 		{
 			if (!this.isThinking && this.isUserDropping)
 			{
+                this.isUserDropping = false;
+
 				int dropIndex = this.GetDropIndex(e.GetPosition(this));
 				this.DropTemp.Data = null;
 
@@ -282,6 +295,9 @@
 
 		private void DrawDropTarget(int dropIndex)
 		{
+            if (!ThinkGoModel.Instance.ShowDropCursor)
+                return;
+
 			int x = dropIndex % GoBoard.NS;
 			int y = (dropIndex / GoBoard.NS) - 1;
 

@@ -17,6 +17,8 @@ namespace ThinkGo
 			// Required to initialize variables
 			InitializeComponent();
 
+            this.DataContext = ThinkGoModel.Instance;
+
             this.NumberMovesPicker.Items.Add("None");
             this.NumberMovesPicker.Items.Add("Last move only");
             this.NumberMovesPicker.Items.Add("Last two moves");

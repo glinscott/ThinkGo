@@ -5,21 +5,32 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
 	xmlns:Phone_Controls="clr-namespace:Phone.Controls;assembly=Phone.Controls"	
+	xmlns:Custom="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"	
 	mc:Ignorable="d"
 	x:Class="ThinkGo.Learn"
 	d:DesignWidth="432" d:DesignHeight="592">
 
 	<Grid x:Name="LayoutRoot" Background="Transparent">
 		<StackPanel Orientation="Vertical" d:LayoutOverrides="Height">
-			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5" Click="TutorialClicked">
+			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5">
+				<Custom:Interaction.Triggers>
+					<Custom:EventTrigger EventName="Click">
+						<ic:NavigateToPageAction TargetPage="/Tutorial/TutorialPage.xaml"/>
+					</Custom:EventTrigger>
+				</Custom:Interaction.Triggers>
 				<Phone_Controls:MultiLineItem Line1="Go Tutorial" Line2="Learn how to play the game of Go"/>
 			</Button>
 		
-			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5" Click="HelpClicked">
+			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5">
+				<Custom:Interaction.Triggers>
+					<Custom:EventTrigger EventName="Click">
+						<ic:NavigateToPageAction TargetPage="/Help/HelpPage.xaml"/>
+					</Custom:EventTrigger>
+				</Custom:Interaction.Triggers>
 				<Phone_Controls:MultiLineItem Line1="Help" Line2="Get help about ThinkGo"/>
 			</Button>
 
-			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5" Click="OnlineClicked">
+			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5">
 				<Phone_Controls:MultiLineItem Line1="Online Resources" Line2="Resources about Go on the Internet"/>
 			</Button>
 		</StackPanel>

@@ -13,6 +13,8 @@
 	public class ThinkGoModel : INotifyPropertyChanged
 	{
         private MoveMarkerOption moveMarkerOption = MoveMarkerOption.Text2;
+        private bool showDropCursor = true;
+        private bool soundEnabled = true;
 
 		public ThinkGoModel()
 		{
@@ -41,6 +43,32 @@
                 {
                     this.moveMarkerOption = value;
                     this.FirePropertyChanged("MoveMarkerOption");
+                }
+            }
+        }
+
+        public bool ShowDropCursor
+        {
+            get { return this.showDropCursor; }
+            set
+            {
+                if (this.showDropCursor != value)
+                {
+                    this.showDropCursor = value;
+                    this.FirePropertyChanged("ShowDropCursor");
+                }
+            }
+        }
+
+        public bool SoundEnabled
+        {
+            get { return this.soundEnabled; }
+            set
+            {
+                if (this.soundEnabled != value)
+                {
+                    this.soundEnabled = value;
+                    this.FirePropertyChanged("SoundEnabled");
                 }
             }
         }
