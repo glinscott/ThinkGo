@@ -427,7 +427,7 @@
 		/// 
 		/// Score is returned with black winning as positive numbers.
 		/// </summary>
-		public float ScoreSimpleEndPosition(float komi)
+		public float ScoreSimpleEndPosition(float komi, byte[] scoreBoard)
 		{
 			float score = -komi;
 			for (int y = 0; y < this.Size; y++)
@@ -450,6 +450,9 @@
 						--score;
 					else if (c == Black)
 						++score;
+
+                    if (scoreBoard != null)
+                        scoreBoard[p] = c;
 				}
 			}
 			return score;

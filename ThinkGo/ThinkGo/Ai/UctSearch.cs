@@ -22,6 +22,9 @@
         private float raveWeightParam1, raveWeightParam2;
         private float firstPlayUrgency = 10000.0f;
 
+        private bool estimateScoreEnabled = false;
+        private byte[] scoreBoard = new byte[GoBoard.MaxPoints];
+
         // Perf. variables
         private List<MoveInfo> perfLegalMoves = new List<MoveInfo>(100);
         private int[] perfFirstPlay = new int[512], perfFirstPlayOpp = new int[512];
@@ -33,7 +36,11 @@
 
             this.raveWeightParam1 = 1.0f / this.raveWeightInitial;
             this.raveWeightParam2 = 1.0f / this.raveWeightFinal;
+
+            this.ScoreEstimate = new double[GoBoard.MaxPoints];
         }
+
+        public double[] ScoreEstimate { get; private set;  }
 
         public int MaxGameLength
         {
@@ -55,6 +62,31 @@
             {
                 this.PlayGame();
                 numberGames++;
+            }
+        }
+
+        public double EstimateScore()
+        {
+            try
+            {
+                this.estimateScoreEnabled = true;
+                Array.Clear(this.ScoreEstimate, 0, this.ScoreEstimate.Length);
+
+                int oldSimulations = this.numSimulations;
+                this.numSimulations = 1000;
+                this.SearchLoop();
+
+                for (int i = 0; i < this.ScoreEstimate.Length; i++)
+                    this.ScoreEstimate[i] /= this.numSimulations;
+
+                this.numSimulations = oldSimulations;
+
+                UctNode bestChild = this.FindBestChild(this.rootNode);
+                return this.GetValueEstimate(true, bestChild);
+            }
+            finally
+            {
+                this.estimateScoreEnabled = false;
             }
         }
 
@@ -300,7 +332,23 @@
         private float Evaluate()
         {
             // Score the result
-            float score = this.board.ScoreSimpleEndPosition(board.Komi);
+            float score = this.board.ScoreSimpleEndPosition(board.Komi, this.estimateScoreEnabled ? this.scoreBoard : null);
+
+            if (this.estimateScoreEnabled)
+            {
+                for (int y = 0; y < this.board.Size; y++)
+                {
+                    for (int x = 0; x < this.board.Size; x++)
+                    {
+                        int p = GoBoard.GeneratePoint(x, y);
+                        switch (this.scoreBoard[p])
+                        {
+                            case GoBoard.Black: this.ScoreEstimate[p] += 1; break;
+                            case GoBoard.Empty: this.ScoreEstimate[p] += 0.5; break;
+                        }
+                    }
+                }
+            }
 
             // Score is always in terms of black, but we want to return score relative to player to move.
             if (board.ToMove == GoBoard.White)

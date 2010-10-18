@@ -17,6 +17,7 @@
 		private GoGame game;
 		private bool isUserDropping;
 		private Rectangle[] pieces;
+        private Rectangle[] estimates;
         private BackgroundWorker worker = new BackgroundWorker();
         private bool isThinking;
         
@@ -36,6 +37,49 @@
             this.worker.RunWorkerCompleted += this.worker_RunWorkerCompleted;
 		}
 
+        public void ShowEstimate(double[] estimate)
+        {
+            int boardSize = this.game.Board.Size;
+
+            if (this.estimates == null)
+            {
+                this.estimates = new Rectangle[boardSize * boardSize];
+                this.CreateRectangles(this.ScoreEstimateCanvas, this.estimates, 0.5);
+            }
+
+            SolidColorBrush white = new SolidColorBrush(Colors.White);
+            SolidColorBrush black = new SolidColorBrush(Colors.Black);
+
+            for (int y = 0; y < this.game.Board.Size; y++)
+            {
+                for (int x = 0; x < this.game.Board.Size; x++)
+                {
+                    int p = GoBoard.GeneratePoint(x, y);
+                    int guiIndex = y * this.game.Board.Size + x;
+
+                    if (estimate[p] < 0.4)
+                    {
+                        this.estimates[guiIndex].Fill = white;
+                    }
+                    else if (estimate[p] < 0.6)
+                    {
+                        this.estimates[guiIndex].Fill = null;
+                    }
+                    else
+                    {
+                        this.estimates[guiIndex].Fill = black;
+                    }
+                }
+            }
+
+            this.ScoreEstimateCanvas.Visibility = Visibility.Visible;
+        }
+
+        public void HideEstimate()
+        {
+            this.ScoreEstimateCanvas.Visibility = Visibility.Collapsed;
+        }
+
         void GoBoardControl_Unloaded(object sender, RoutedEventArgs e)
         {
             if (this.game != null)
@@ -45,6 +89,26 @@
             }
         }
 
+        private void CreateRectangles(Canvas parent, Rectangle[] pieces, double opacity)
+        {
+            int boardSize = this.game.Board.Size;
+            for (int y = 0; y < boardSize; y++)
+            {
+                for (int x = 0; x < boardSize; x++)
+                {
+                    Rectangle rectangle = new Rectangle();
+                    rectangle.Fill = null;
+                    rectangle.Stroke = null;
+                    rectangle.Width = this.pieceSize;
+                    rectangle.Height = this.pieceSize;
+                    rectangle.Opacity = opacity;
+                    Canvas.SetLeft(rectangle, x * this.pieceSize);
+                    Canvas.SetTop(rectangle, y * this.pieceSize);
+                    parent.Children.Add(rectangle);
+                    pieces[y * this.game.Board.Size + x] = rectangle;
+                }
+            }
+        }
 		private void GoBoardControl_Loaded(object sender, RoutedEventArgs e)
 		{
             this.game = ThinkGoModel.Instance.ActiveGame;
@@ -57,21 +121,7 @@
 
             this.PieceCanvas.Children.Clear();
 			this.pieces = new Rectangle[boardSize * boardSize];
-			for (int y = 0; y < boardSize; y++)
-			{
-				for (int x = 0; x < boardSize; x++)
-				{
-					Rectangle rectangle = new Rectangle();
-					rectangle.Fill = null;
-					rectangle.Stroke = null;
-					rectangle.Width = this.pieceSize;
-					rectangle.Height = this.pieceSize;
-					Canvas.SetLeft(rectangle, x * this.pieceSize);
-					Canvas.SetTop(rectangle, y * this.pieceSize);
-					this.PieceCanvas.Children.Add(rectangle);
-					this.pieces[y * this.game.Board.Size + x] = rectangle;
-				}
-			}
+            this.CreateRectangles(this.PieceCanvas, this.pieces, 1.0);
 
 			PathGeometry geometry = new PathGeometry();
 
@@ -320,8 +370,8 @@
 				return;
 			}
 
-			int x = index % GoBoard.NS;
-			int y = (index / GoBoard.NS) - 1;
+			int x, y;
+            GoBoard.GetPointXY(index, out x, out y);
 			int guiIndex = y * this.game.Board.Size + x;
 
 			if (this.game.Board.Board[index] == GoBoard.Empty)

@@ -149,7 +149,7 @@
                 }
             }
 
-            float score = board.ScoreSimpleEndPosition(board.Komi);
+            float score = board.ScoreSimpleEndPosition(board.Komi, null);
 
             return score;
         }

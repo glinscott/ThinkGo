@@ -18,6 +18,7 @@
 		<shell:ApplicationBar>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.undo.rest.png" Text="Undo" Click="UndoClicked"/>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.check.rest.png" Text="Pass" Click="PassClicked"/>
+			<shell:ApplicationBarIconButton IconUri="/icons/appbar.check.rest.png" Text="Score" Click="ScoreClicked"/>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.feature.settings.rest.png" Text="Settings" Click="SettingsClicked"/>
 		</shell:ApplicationBar>
 	</phone:PhoneApplicationPage.ApplicationBar>
@@ -35,7 +36,13 @@
         <StackPanel Margin="0" Grid.Row="1" UseLayoutRounding="True">
             <local:GoBoardControl x:Name="GoBoardControl" DataContext="{Binding ActiveGame}" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="480" UseLayoutRounding="True"/>
 			<local:BoardHeader DataContext="{Binding ActiveGame}" />
-			<ProgressBar x:Name="ThinkingBar" Height="43" Margin="8,-25,8,0" VerticalAlignment="Bottom" IsIndeterminate="True" Visibility="Collapsed"/>
+			<Grid Height="122">
+				<ProgressBar x:Name="ThinkingBar" Height="43" Margin="8,0,8,79" VerticalAlignment="Bottom" IsIndeterminate="True" Visibility="Collapsed"/>
+				<Grid x:Name="ScoreEstimateBar" Margin="0,0,0,43">
+					<Button Content="Details" HorizontalAlignment="Right" Width="220" Click="ShowScorePopup"/>
+					<TextBlock x:Name="ScoreEstimateText" Margin="42,8,216,8" Text="Human has a 91.5% chance of winning" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}"/>
+				</Grid>
+			</Grid>
 		</StackPanel>
 	</Grid>
 </phone:PhoneApplicationPage>

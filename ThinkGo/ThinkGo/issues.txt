@@ -5,8 +5,8 @@
 - Scoring display at endgame
 - Half decent splash screen
 - Add sounds
+- Better icon for pass, and view score
 
-- Patterns in AI
 - AI needs to avoid playing into living groups
 
 Bugs:

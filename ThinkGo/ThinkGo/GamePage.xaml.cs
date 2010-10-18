@@ -5,6 +5,7 @@
     using System.Windows;
     using Microsoft.Phone.Controls;
     using Microsoft.Phone.Shell;
+    using ThinkGo.Ai;
 
     public partial class GamePage : PhoneApplicationPage
     {
@@ -66,7 +67,9 @@
 		private void RefreshState()
 		{
 			this.undoButton.IsEnabled = this.model.ActiveGame != null && this.model.ActiveGame.CanUndo;
-		}
+            this.ScoreEstimateBar.Visibility = Visibility.Collapsed;
+            this.GoBoardControl.HideEstimate();
+        }
 
 		private void OnActiveGamePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -93,5 +96,20 @@
 			// TODO - dialog for pass, resign or cancel
 			this.model.ActiveGame.PlayMove(GoBoard.MovePass);
         }
-    }
+
+        private void ScoreClicked(object sender, System.EventArgs e)
+        {
+            UctSearch search = new UctSearch(this.model.ActiveGame.Board);
+            double estimate = search.EstimateScore();
+            this.GoBoardControl.ShowEstimate(search.ScoreEstimate);
+            this.ScoreEstimateBar.Visibility = Visibility.Visible;
+            GoPlayer player = this.model.ActiveGame.Board.ToMove == GoBoard.Black ? this.model.ActiveGame.BlackPlayer : this.model.ActiveGame.WhitePlayer;
+            this.ScoreEstimateText.Text = string.Format("{0} has a {1}.{2}% chance of winning", player.Name, (int)(estimate * 100), (int)(estimate * 1000) % 10);
+        }
+
+        private void ShowScorePopup(object sender, System.Windows.RoutedEventArgs e)
+        {
+        	// TODO!
+        }
+	}
 }
