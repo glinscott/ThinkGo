@@ -68,8 +68,11 @@
 					this.MoveType = PlayoutMoveType.LowLib;
                     move = this.SelectRandom();
                 }
-
-                // TODO: generate pattern moves
+                if (move == GoBoard.MoveNull && this.GeneratePatternMove(lastMove))
+                {
+                    this.MoveType = PlayoutMoveType.Pattern;
+                    move = this.SelectRandom();
+                }
             }
 
             if (move == GoBoard.MoveNull)
@@ -214,6 +217,66 @@
                         this.moves.Add(liberty);
                 }
             }
+        }
+
+        private bool GeneratePatternMove(int lastMove)
+        {
+            Debug.Assert(this.moves.Count == 0);
+            Debug.Assert(lastMove >= 0);
+
+            this.CheckPatternMove(lastMove - GoBoard.NS - 1);
+            this.CheckPatternMove(lastMove - GoBoard.NS);
+            this.CheckPatternMove(lastMove - GoBoard.NS + 1);
+            this.CheckPatternMove(lastMove - 1);
+            this.CheckPatternMove(lastMove + 1);
+            this.CheckPatternMove(lastMove + GoBoard.NS - 1);
+            this.CheckPatternMove(lastMove + GoBoard.NS);
+            this.CheckPatternMove(lastMove + GoBoard.NS + 1);
+
+            // Second last move
+            int original = lastMove;
+            lastMove = this.board.SecondLastMove;
+            if (lastMove >= 0)
+            {
+                this.CheckPatternMove2(lastMove - GoBoard.NS - 1, original);
+                this.CheckPatternMove2(lastMove - GoBoard.NS, original);
+                this.CheckPatternMove2(lastMove - GoBoard.NS + 1, original);
+                this.CheckPatternMove2(lastMove - 1, original);
+                this.CheckPatternMove2(lastMove + 1, original);
+                this.CheckPatternMove2(lastMove + GoBoard.NS - 1, original);
+                this.CheckPatternMove2(lastMove + GoBoard.NS, original);
+                this.CheckPatternMove2(lastMove + GoBoard.NS + 1, original);
+            }
+
+            return this.moves.Count > 0;
+        }
+
+        private void CheckPatternMove(int p)
+        {
+            if (p >= 0 && p < this.board.Board.Length &&
+                this.board.Board[p] == GoBoard.Empty &&
+                PatternMatcher.MatchAny(this.board, p) &&
+                !this.board.SelfAtari(p, this.board.ToMove))
+                this.moves.Add(p);
+        }
+
+        private void CheckPatternMove2(int p, int lastMove)
+        {
+            if (p >= 0 && p < this.board.Board.Length && 
+                this.board.Board[p] == GoBoard.Empty &&
+                !PlayoutPolicy.IsIn8(p, lastMove) &&
+                PatternMatcher.MatchAny(this.board, p) &&
+                !this.board.SelfAtari(p, this.board.ToMove))
+                this.moves.Add(p);
+        }
+
+        private static bool IsIn8(int p1, int p2)
+        {
+            int d = p2 - p1;
+            foreach (int delta in GoBoard.DirDelta8)
+                if (delta == d)
+                    return true;
+            return false;
         }
 
         public void OnPlay()

@@ -46,6 +46,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\CaptureGenerator.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\GoBoard.cs" />
+    <Compile Include="..\..\ThinkGo\ThinkGo\Ai\PatternMatcher.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\Players.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\PlayoutPolicy.cs" />
     <Compile Include="..\..\ThinkGo\ThinkGo\Ai\RandomMoveGenerator.cs" />

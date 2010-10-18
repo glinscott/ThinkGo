@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ai\CaptureGenerator.cs" />
+    <Compile Include="Ai\PatternMatcher.cs" />
     <Compile Include="Ai\Players.cs" />
     <Compile Include="Ai\PlayoutPolicy.cs" />
     <Compile Include="Ai\RandomMoveGenerator.cs" />

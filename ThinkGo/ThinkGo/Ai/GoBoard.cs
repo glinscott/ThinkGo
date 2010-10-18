@@ -26,6 +26,7 @@
 		public const int NS = 20;
 
 		public static readonly int[] DirDelta = new int[] { NS, -NS, 1, -1 };
+        public static readonly int[] DirDelta8 = new int[] {  -NS - 1, -NS, -NS + 1, -1, 1, NS - 1, NS, NS + 1 };
 
 		private int[][] numNeighbors;
 		private int[] numNeighborsEmpty;
@@ -468,7 +469,7 @@
 			{
 				for (int x = 0; x < this.Size; x++)
 				{
-					int i = (y + 1) * NS + x;
+					int i = GoBoard.GeneratePoint(x, y);
 					this.Board[i] = Empty;
 
 					int neighbors = 0;
@@ -588,6 +589,21 @@
         public int NumNeighbors(int p, byte c)
         {
             return this.numNeighbors[c][p];
+        }
+
+        public int NumDiagonals(int p, byte c)
+        {
+            int result = 0;
+            if (this.Board[p - GoBoard.NS - 1] == c) result++;
+            if (this.Board[p - GoBoard.NS + 1] == c) result++;
+            if (this.Board[p + GoBoard.NS - 1] == c) result++;
+            if (this.Board[p + GoBoard.NS + 1] == c) result++;
+            return result;
+        }
+
+        public int NumNeighborsEmpty(int p)
+        {
+            return this.numNeighborsEmpty[p];
         }
 
 		public LibertyList GetLiberties(int p)

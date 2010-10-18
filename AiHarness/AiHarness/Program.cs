@@ -17,9 +17,9 @@ namespace AiHarness
 
         static void Main(string[] args)
 		{
-/*            UctTests.Run();
+            UctTests.Run();
 
-            SgfParser parser = new SgfParser(stayAliveTestString);
+/*            SgfParser parser = new SgfParser(stayAliveTestString);
             SgfTree tree = parser.Root;
 
             SgfReplay replay = new SgfReplay(tree);
@@ -58,7 +58,7 @@ namespace AiHarness
 			board.Reset();
 
 			this.players[GoBoard.Black] = new UctPlayer();
-			this.players[GoBoard.White] = new PlayoutPlayer();
+			this.players[GoBoard.White] = new NoSearchPlayer();
 			for (int i = 0; i < 2; i++)
 			{
 				this.players[i].SetBoard(board);
@@ -72,8 +72,8 @@ namespace AiHarness
 
 				board.PlaceStone(lastMove);
 
-//				GameSimulator.PrintBoard(board);
-//				Console.ReadKey();
+				GameSimulator.PrintBoard(board);
+				Console.ReadKey();
 			 }
 
 

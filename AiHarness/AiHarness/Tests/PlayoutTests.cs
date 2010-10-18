@@ -55,8 +55,7 @@ Atari heuristic should not generate B2, because it does not escape the atari.
 Capture heuristic has lower priority than pattern heuristic.]
 )");
             policy.Initialize(board);
-            // TODO Disabled until pattern heuristic added
-            //Verify(board.GetPointNotation(policy.GenerateMove()) != "B2");
+            Verify(board.GetPointNotation(policy.GenerateMove()) != "B2");
         }
 
         private void GoodMoveTests()

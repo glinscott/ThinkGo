@@ -333,21 +333,20 @@
 			
 			PlayoutMoveType moveType = this.policy.MoveType;
 			List<int> atariMoves = new List<int>();
+            List<int> patternMoves = new List<int>();
 
 			bool isFillBoardRandom = moveType == PlayoutMoveType.Random || moveType == PlayoutMoveType.FillBoard;	
-			bool anyHeuristic = this.FindGlobalPatternAndAtariMoves(atariMoves);
+			bool anyHeuristic = this.FindGlobalPatternAndAtariMoves(patternMoves, atariMoves);
 
 			bool isSmallBoard = this.board.Size < 15;
 			if (moves.Count > 0 && moves[moves.Count - 1].Point == GoBoard.MovePass)
 			{
 				// Initialize pass to low value
 				MoveInfo move = moves[moves.Count - 1];
-				move.Value = 0.1f;
+				move.Value = 0.001f;
 				move.Count = isSmallBoard ? 9 : 18;
 				moves[moves.Count - 1] = move;
 			}
-
-			// TODO: patterns!
 
 			if (isFillBoardRandom)
 			{
@@ -364,19 +363,24 @@
 						move.Value = 1.0f;
 						move.Count = 3;
 					}
-					else
-					{
-						if (!anyHeuristic)
-						{
-							move.Value = 0.0f;
-							move.Count = 0;
-						}
-						else
-						{
-							move.Value = 0.5f;
-							move.Count = 3;
-						}
-					}
+                    else if (patternMoves.Contains(move.Point))
+                    {
+                        move.Value = 0.9f;
+                        move.Count = 3;
+                    }
+                    else
+                    {
+                        if (!anyHeuristic)
+                        {
+                            move.Value = 0.0f;
+                            move.Count = 0;
+                        }
+                        else
+                        {
+                            move.Value = 0.5f;
+                            move.Count = 3;
+                        }
+                    }
 					moves[i] = move;
 				}
 			}
@@ -387,12 +391,14 @@
 				for (int i = 0; i < moves.Count - 1; i++)
 				{
 					MoveInfo move = moves[i];
-					if (this.board.SelfAtari(move.Point, this.board.ToMove))
-						move.Value = 0.1f;
-					else if (atariMoves.Contains(move.Point))
-						move.Value = 0.8f;
-					else
-						move.Value = 0.4f;
+                    if (this.board.SelfAtari(move.Point, this.board.ToMove))
+                        move.Value = 0.1f;
+                    else if (atariMoves.Contains(move.Point))
+                        move.Value = 0.8f;
+                    else if (patternMoves.Contains(move.Point))
+                        move.Value = 0.6f;
+                    else
+                        move.Value = 0.4f;
                     
                     if (policyMoves.Contains(move.Point))
                         move.Value = 1.0f;
@@ -423,21 +429,18 @@
 					int dist = Math.Abs(tx - x) + Math.Abs(ty - y); // TODO: use common fate graph distance here
 					switch (dist)
 					{
-						case 1: move.Value += 0.4f; break;
+						case 1: move.Value += 0.6f; break;
 						case 2: move.Value += 0.3f; break;
 						case 3: move.Value += 0.2f; break;
 						default: move.Value += 0.1f; break;
 					}
-				}
-				else
-					move.Value += 0.1f;
-
-				move.Count += count;
-				moves[i] = move;
+                    move.Count += count;
+                    moves[i] = move;
+                }
 			}
 		}
 
-		private bool FindGlobalPatternAndAtariMoves(List<int> atari)
+		private bool FindGlobalPatternAndAtariMoves(List<int> pattern, List<int> atari)
 		{
 			bool result = false;
 			for (int y = 0; y < this.board.Size; y++)
@@ -447,6 +450,12 @@
 					int p = GoBoard.GeneratePoint(x, y);
 					if (this.board.Board[p] != GoBoard.Empty)
 						continue;
+
+                    if (PatternMatcher.MatchAny(this.board, p))
+                    {
+                        pattern.Add(p);
+                        result = true;
+                    }
 
 					if (UctSearch.SetsAtari(this.board, p))
 					{

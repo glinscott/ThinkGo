@@ -100,6 +100,9 @@
                 this.Board.PlaceStone(this.GetPoint(position));
             }
 
+            this.Board.LastMove = GoBoard.MoveNull;
+            this.Board.SecondLastMove = GoBoard.MoveNull;
+
             string player = rootNode.TryGetValue("PL");
             if (player != null)
             {
