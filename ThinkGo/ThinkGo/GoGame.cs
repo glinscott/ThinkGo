@@ -50,6 +50,16 @@
             get { return this.moves.Count > 0; }
         }
 
+        public bool IsGameOver
+        {
+            get
+            {
+                return
+                    this.Board.LastMove == GoBoard.MovePass &&
+                    this.Board.SecondLastMove == GoBoard.MovePass;
+            }
+        }
+
         public List<int> PlayMove(int move)
         {
             bool isWhite = this.Board.ToMove == GoBoard.White;
@@ -57,8 +67,7 @@
             List<int> deleted = this.Board.PlaceStone(move);
             this.moves.Add(move);
 
-            if (this.Board.LastMove == GoBoard.MovePass &&
-                this.Board.SecondLastMove == GoBoard.MovePass)
+            if (this.IsGameOver)
             {
                 if (this.PropertyChanged != null)
                 {

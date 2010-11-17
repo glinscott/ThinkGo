@@ -1,13 +1,11 @@
-﻿- Need to write basic tutorial content
-- Handicap settings
-- Game over dialog
-- Suggest move option
-- Scoring display at endgame
+﻿- Handicap settings
 - Half decent splash screen
+- Marker positions on board (circles)
 - Add sounds
 - Better icon for pass, and view score
 
 - AI needs to avoid playing into living groups
 
 Bugs:
-
+- Crash when clicking on links in help/about
+- Crash when clicking on scoreboard?

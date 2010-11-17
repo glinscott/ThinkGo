@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 	using System.Diagnostics;
 
-    class UctSearch
+    public class UctSearch
     {
         private GoBoard board;
         private GoBoard rootBoard;
@@ -40,6 +40,7 @@
             this.ScoreEstimate = new double[GoBoard.MaxPoints];
         }
 
+        public GoBoard Board { get { return this.rootBoard; } }
         public double[] ScoreEstimate { get; private set;  }
 
         public int MaxGameLength
@@ -82,7 +83,9 @@
                 this.numSimulations = oldSimulations;
 
                 UctNode bestChild = this.FindBestChild(this.rootNode);
-                return this.GetValueEstimate(true, bestChild);
+                if (bestChild == null)
+                    return 1.0;
+                return this.GetValueEstimate(false, bestChild);
             }
             finally
             {

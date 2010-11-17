@@ -1,16 +1,9 @@
-﻿<phone:PhoneApplicationPage 
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-	xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:local="clr-namespace:ThinkGo"	
-	mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
+﻿<phone:PhoneApplicationPage xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone" xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:ThinkGo" xmlns:Custom="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" xmlns:Phone_Controls="clr-namespace:Phone.Controls;assembly=Phone.Controls" d:DesignWidth="480" d:DesignHeight="800"
 	x:Class="ThinkGo.TutorialPage"
 	FontFamily="{StaticResource PhoneFontFamilyNormal}"
 	FontSize="{StaticResource PhoneFontSizeNormal}"
 	Foreground="{StaticResource PhoneForegroundBrush}"
+	mc:Ignorable="d"
 	Orientation="Portrait"
 	shell:SystemTray.IsVisible="True">
 
@@ -30,14 +23,69 @@
 		<!--ContentPanel - place additional content here-->
 		<Grid x:Name="ContentPanel" Grid.Row="1">
 			<ListBox Margin="12">
-				<Button Content="About Go" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Basics" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Chains" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Liberties" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Capturing" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Eyes" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Passing and Game over" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Basic Strategy" Style="{StaticResource ListBoxButton}" />
+				<Button Content="About Go" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Basics" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="1"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Chains" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="2"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Liberties" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="3"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Capturing and Suicide" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="4"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Ko" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="5"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Passing and Game over" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="6"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Handicap and Komi" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="7"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Basic Strategy" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Tutorial/TutorialPivot.xaml" PivotIndex="8"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
 			</ListBox>
 		</Grid>
 	</Grid>

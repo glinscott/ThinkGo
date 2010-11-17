@@ -126,5 +126,11 @@ namespace ThinkGo
             this.aiSettings.SelectedIndex = TimeSetting.TimeSettings.IndexOf(aiPlayer.TimeSetting);
             this.aiSettings.Show();
         }
+
+		private void HandicapClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			((INavigate)Application.Current.RootVisual).Navigate(new Uri("/HandicapPage.xaml", UriKind.Relative));
+			e.Handled = true;
+		}
 	}
 }

@@ -16,6 +16,9 @@
     UseLayoutRounding="True">
 	<phone:PhoneApplicationPage.ApplicationBar>
 		<shell:ApplicationBar>
+			<shell:ApplicationBar.MenuItems>
+				<shell:ApplicationBarMenuItem Text="resign" Click="ResignClicked"/>
+			</shell:ApplicationBar.MenuItems>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.undo.rest.png" Text="Undo" Click="UndoClicked"/>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.check.rest.png" Text="Pass" Click="PassClicked"/>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.check.rest.png" Text="Score" Click="ScoreClicked"/>
@@ -25,6 +28,48 @@
 
 	<!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent" UseLayoutRounding="True">
+    	<VisualStateManager.VisualStateGroups>
+    		<VisualStateGroup x:Name="ScorePopup">
+    			<VisualStateGroup.Transitions>
+    				<VisualTransition GeneratedDuration="0:0:0.2"/>
+    				<VisualTransition From="ScorePopupOpen" GeneratedDuration="0:0:0.2" To="ScorePopupClosed">
+    					<Storyboard>
+    						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="scorePopup">
+    							<DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+    								<DiscreteObjectKeyFrame.Value>
+    									<Visibility>Collapsed</Visibility>
+    								</DiscreteObjectKeyFrame.Value>
+    							</DiscreteObjectKeyFrame>
+    						</ObjectAnimationUsingKeyFrames>
+    					</Storyboard>
+    				</VisualTransition>
+    				<VisualTransition From="ScorePopupClosed" GeneratedDuration="0:0:0.2" To="ScorePopupOpen">
+    					<Storyboard>
+    						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="scorePopup">
+    							<DiscreteObjectKeyFrame KeyTime="0">
+    								<DiscreteObjectKeyFrame.Value>
+    									<Visibility>Visible</Visibility>
+    								</DiscreteObjectKeyFrame.Value>
+    							</DiscreteObjectKeyFrame>
+    						</ObjectAnimationUsingKeyFrames>
+    					</Storyboard>
+    				</VisualTransition>
+    			</VisualStateGroup.Transitions>
+    			<VisualState x:Name="ScorePopupOpen">
+    				<Storyboard>
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="scorePopup">
+    						<DiscreteObjectKeyFrame KeyTime="0">
+    							<DiscreteObjectKeyFrame.Value>
+    								<Visibility>Visible</Visibility>
+    							</DiscreteObjectKeyFrame.Value>
+    						</DiscreteObjectKeyFrame>
+    					</ObjectAnimationUsingKeyFrames>
+    					<DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="scorePopup" d:IsOptimized="True"/>
+    				</Storyboard>
+    			</VisualState>
+    			<VisualState x:Name="ScorePopupClosed"/>
+    		</VisualStateGroup>
+    	</VisualStateManager.VisualStateGroups>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition/>
@@ -34,7 +79,10 @@
 			<local:ThinkGoTitle Margin="0" d:LayoutOverrides="Height"/>
 		</StackPanel>
         <StackPanel Margin="0" Grid.Row="1" UseLayoutRounding="True">
-            <local:GoBoardControl x:Name="GoBoardControl" DataContext="{Binding ActiveGame}" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="480" UseLayoutRounding="True"/>
+			<Grid Height="480">
+        		<local:GoBoardControl x:Name="GoBoardControl" DataContext="{Binding ActiveGame}" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="480" UseLayoutRounding="True"/>
+				<local:ScorePopup x:Name="scorePopup" Visibility="Collapsed" MouseLeftButtonDown="ScorePopupClicked" Opacity="0" />
+        	</Grid>
 			<local:BoardHeader DataContext="{Binding ActiveGame}" />
 			<Grid Height="122">
 				<ProgressBar x:Name="ThinkingBar" Height="43" Margin="8,0,8,79" VerticalAlignment="Bottom" IsIndeterminate="True" Visibility="Collapsed"/>

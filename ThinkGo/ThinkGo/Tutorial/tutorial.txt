@@ -1,0 +1,70 @@
+About
+-----
+Go is an ancient board game, originating from China more than 2,500 years ago.  It is also known as wéiqí in Chinese, and baduk in Korea.
+It takes minutes to learn the rules, but provides a lifetime of challenge.
+
+Basics
+------
+The board is a 19x19 grid, and starts empty.  The players then take turns placing a stone upon an empty intersection.
+Once a stone is placed, it may not move.  Black is given the first move.  The goal of the game is to control the most territory at the end of the game.
+
+Go may also be played on a 9x9 or 13x13 board for shorter games.
+
+Chains
+------
+A chain is a connected group of stones of the same color.  Stones are connected by being next to each other.  Diagonally adjacent stones are
+not considered next to each other.
+
+In the following example the A chain has 3 stones, B has 2, C has 2, and D has 5.
+
+Liberties
+---------
+
+Liberties are the empty intersections next to a chain.  A single stone with no neighbors would have 4 liberties.  A single stone on the edge of the
+board would have 3 liberties.  The liberties for the white chain are marked here:
+
+
+Capturing and Suicide
+---------------------
+
+Chains must have at least one liberty to survive.  If a chain has no liberties remaining, then all the stones in the chain are removed from
+the board.
+
+Related to this is the suicide rule.  Placing a stone that causes your own stones to be captured (by having no liberties remaining) is forbidden.
+
+However, the opponents stones are captured first when placing stones, so in the following example, white can play on A:
+
+Ko
+--
+
+Players may not make a move that returns the game to a previous position.  This prevents the game from never finishing.
+
+A common example is below.  Here if white is to move, and plays at A, they will capture the black stone at B.  Black may then not immediately
+recapture by placing a stone on B.  However, black may play elsewhere, then play on B later.  This is called creating a Ko threat.
+
+
+Passing and Game over
+---------------------
+
+The game is over when both players pass consecutively.  At this point, stones still on the board, but unable to avoid capture (can't form a living
+group), are removed from the board.
+
+A player's score is then the number of stones they have on the board, plus the number of empty intersections surrounded by their stones.
+
+If there is a disagreement about whether stones are dead or alive, the game resumes until the status of the stones is clear.
+
+
+Handicap and Komi
+-----------------
+
+Placing the first stone is an advantage, and for that reason Komi was introduced.  Komi is added to the white player's score at the end of the game.
+
+Handicaps allow players of different strength to play each other competitively.  The player given the handicap places a number of handicap stones before the other
+player moves.
+
+
+Basic Strategy
+--------------
+
+Forming living groups is a key concept in Go.  Living groups are groups with two "eyes".  Eyes are areas that the group completely surrounds, and the opponent can
+not play into because of the suicide rule.

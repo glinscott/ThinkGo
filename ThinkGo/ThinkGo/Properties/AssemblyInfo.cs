@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ThinkGo")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft Corp.")]
+[assembly: AssemblyCompany("ForwardCoding")]
 [assembly: AssemblyProduct("ThinkGo")]
-[assembly: AssemblyCopyright("Copyright © Microsoft Corp. 2010")]
+[assembly: AssemblyCopyright("Copyright © Gary Linscott 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

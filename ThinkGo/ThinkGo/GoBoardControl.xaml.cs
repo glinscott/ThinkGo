@@ -85,7 +85,6 @@
             if (this.game != null)
             {
                 this.game.PropertyChanged -= this.OnGamePropertyChanged; 
-                this.game = null;
             }
         }
 
@@ -109,6 +108,7 @@
                 }
             }
         }
+
 		private void GoBoardControl_Loaded(object sender, RoutedEventArgs e)
 		{
             this.game = ThinkGoModel.Instance.ActiveGame;
@@ -134,6 +134,18 @@
 				
 				geometry.Figures.Add(this.DrawLine(position, edgeOffset, position, bottom));
 				geometry.Figures.Add(this.DrawLine(edgeOffset, position, bottom, position));
+
+				if (i == this.game.Board.Size / 2)
+				{
+					EllipseGeometry eg = new EllipseGeometry();
+					
+				}
+				else if (i == this.game.Board.Size / 3)
+				{
+				}
+				else if (i == (this.game.Board.Size * 2) / 3)
+				{
+				}
 			}
 
 			this.BoardBackground.Data = geometry;

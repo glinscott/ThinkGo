@@ -16,6 +16,6 @@
         <Path x:Name="BoardEdge" Fill="{x:Null}" Stroke="Black" StrokeThickness="3" UseLayoutRounding="True" Stretch="None" Width="480" Height="480"/>
 		<Canvas x:Name="PieceCanvas" />
         <Canvas x:Name="ScoreEstimateCanvas" />
-        <Path x:Name="DropTemp" Fill="{x:Null}" Stroke="Blue" StrokeThickness="3" />
+        <Path x:Name="DropTemp" Fill="{x:Null}" Stroke="Orange" StrokeThickness="3" />
     </Canvas>
 </UserControl>

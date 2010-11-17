@@ -9,6 +9,106 @@ using AiHarness.Tests;
 
 namespace AiHarness
 {
+	public class Region : List<int>
+	{
+	}
+
+	public class GoSafetySolver
+	{
+		private GoBoard board;
+		private bool[] safePoints;
+		private List<List<int>> chains = new List<List<int>>();
+		private List<List<Region>> regions = new List<List<Region>>();
+		private int[] visited;
+
+		public GoSafetySolver(GoBoard board)
+		{
+			this.board = board;
+			this.safePoints = new bool[GoBoard.MaxPoints];
+
+			this.Solve();
+		}
+
+		private void Solve()
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				this.regions[i] = new List<Region>();
+				this.chains[i] = new List<int>();
+
+				this.visited = new int[GoBoard.MaxPoints];
+				for (int j = 0; j < this.visited.Length; j++)
+					this.visited[j] = -1;
+
+				for (int y = 0; y < this.board.Size; y++)
+				{
+					for (int x = 0; x < this.board.Size; x++)
+					{
+						int p = GoBoard.GeneratePoint(x, y);
+						if (this.board.Board[p] == i)
+						{
+							if (this.board.GetAnchor(p) == p)
+							{
+								this.chains[i].Add(p);
+							}
+						}
+						else
+						{
+							Region region = this.BuildRegion(null, (byte)i, x, y, this.regions[i].Count);
+							if (region != null)
+								this.regions[i].Add(region);
+						}
+					}
+				}
+
+				this.Iterate((byte)i);
+			}
+		}
+
+		private void Iterate(byte c)
+		{
+			bool changed = true;
+			while (changed)
+			{
+				// Remove chains that don't have at least 2 adjacent regions with all empty points in the region adjacent to the chain
+				for (int i = this.chains[c].Count - 1; i >= 0; i--)
+				{
+					int anchor = this.chains[c][i];
+					foreach (int liberty in this.board.GetLiberties(anchor))
+					{
+						int regionNumber = this.visited[liberty];
+						Debug.Assert(regionNumber != -1);
+						Region region = this.regions[c][regionNumber];
+						
+					}
+				}
+			}
+		}
+
+		private Region BuildRegion(Region region, byte excludedColor, int x, int y, int regionNumber)
+		{
+			int p = GoBoard.GeneratePoint(x, y);
+			if (this.visited[p] != -1)
+				return null;
+
+			this.visited[p] = regionNumber;
+
+			if (this.board.Board[p] == excludedColor)
+				return null;
+
+			if (region == null)
+				region = new Region();
+			region.Add(p);
+
+			if (x - 1 >= 0) this.BuildRegion(region, excludedColor, x - 1, y, regionNumber);
+			if (x + 1 < this.board.Size) this.BuildRegion(region, excludedColor, x + 1, y, regionNumber);
+			if (y - 1 >= 0) this.BuildRegion(region, excludedColor, x, y - 1, regionNumber);
+			if (y + 1 < this.board.Size) this.BuildRegion(region, excludedColor, x, y + 1, regionNumber);
+
+			return region;
+		}
+	}
+
 	class Program
 	{
 /*        private const string fooString = @"(;CA[Windows-1252]SZ[9]AP[MultiGo:4.4.4]MULTIGOGM[1];B[dd];W[ec];B[ed];W[fd];B[fe]

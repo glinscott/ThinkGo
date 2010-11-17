@@ -6,18 +6,22 @@
     using Microsoft.Phone.Controls;
     using Microsoft.Phone.Shell;
     using ThinkGo.Ai;
+    using System.Windows.Controls.Primitives;
 
     public partial class GamePage : PhoneApplicationPage
     {
 		private ThinkGoModel model;
 		private GoGame activeGame;
 		private ApplicationBarIconButton undoButton;
+        private UctSearch scoreSearch;
 
         public GamePage()
         {
 			InitializeComponent();
-		
-			this.model = ThinkGoModel.Instance;
+
+            VisualStateManager.GoToState(this, "ScorePopupClosed", false);
+
+            this.model = ThinkGoModel.Instance;
 			this.DataContext = this.model;
 
             this.model.PropertyChanged += this.OnModelPropertyChanged;
@@ -67,18 +71,31 @@
 		private void RefreshState()
 		{
 			this.undoButton.IsEnabled = this.model.ActiveGame != null && this.model.ActiveGame.CanUndo;
-            this.ScoreEstimateBar.Visibility = Visibility.Collapsed;
-            this.GoBoardControl.HideEstimate();
+
+            if (this.model.ActiveGame != null && this.model.ActiveGame.IsGameOver)
+            {
+                this.ShowTerritory();
+                this.ShowScoring();
+
+                double whiteResult, blackResult;
+                double.TryParse(this.scorePopup.WhiteTotal.Text, out whiteResult);
+                double.TryParse(this.scorePopup.BlackTotal.Text, out blackResult);
+
+                string winningPlayer = whiteResult > blackResult ? this.activeGame.WhitePlayer.Name : this.activeGame.BlackPlayer.Name;
+
+                this.ScoreEstimateBar.Visibility = Visibility.Visible;
+                this.ScoreEstimateText.Text = string.Format("{0} wins by {1}", winningPlayer, Math.Abs(whiteResult - blackResult));
+            }
+            else
+            {
+                this.ScoreEstimateBar.Visibility = Visibility.Collapsed;
+                this.GoBoardControl.HideEstimate();
+            }
         }
 
 		private void OnActiveGamePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-            if (e.PropertyName == "GameOver")
-            {
-                this.NavigationService.GoBack();
-            }
-
-			this.RefreshState();
+            this.RefreshState();
 		}
 
         private void UndoClicked(object sender, System.EventArgs e)
@@ -93,23 +110,53 @@
 
         private void PassClicked(object sender, System.EventArgs e)
         {
-			// TODO - dialog for pass, resign or cancel
 			this.model.ActiveGame.PlayMove(GoBoard.MovePass);
         }
 
         private void ScoreClicked(object sender, System.EventArgs e)
         {
-            UctSearch search = new UctSearch(this.model.ActiveGame.Board);
-            double estimate = search.EstimateScore();
-            this.GoBoardControl.ShowEstimate(search.ScoreEstimate);
-            this.ScoreEstimateBar.Visibility = Visibility.Visible;
+            double estimate = this.ShowTerritory();
             GoPlayer player = this.model.ActiveGame.Board.ToMove == GoBoard.Black ? this.model.ActiveGame.BlackPlayer : this.model.ActiveGame.WhitePlayer;
             this.ScoreEstimateText.Text = string.Format("{0} has a {1}.{2}% chance of winning", player.Name, (int)(estimate * 100), (int)(estimate * 1000) % 10);
         }
 
         private void ShowScorePopup(object sender, System.Windows.RoutedEventArgs e)
         {
-        	// TODO!
+            this.ShowScoring();
+            GoPlayer player = this.model.ActiveGame.Board.ToMove == GoBoard.Black ? this.model.ActiveGame.BlackPlayer : this.model.ActiveGame.WhitePlayer;
+        }
+
+        private void ResignClicked(object sender, System.EventArgs e)
+        {
+            this.ShowTerritory();
+            this.ShowScoring();
+        }
+
+        private double ShowTerritory()
+        {
+            this.scoreSearch = new UctSearch(this.model.ActiveGame.Board);
+            double estimate = this.scoreSearch.EstimateScore();
+            this.GoBoardControl.ShowEstimate(this.scoreSearch.ScoreEstimate);
+            this.ScoreEstimateBar.Visibility = Visibility.Visible;
+            return estimate;
+        }
+
+        private void ShowScoring()
+        {
+            if (this.scorePopup.Visibility == Visibility.Visible)
+            {
+                VisualStateManager.GoToState(this, "ScorePopupClosed", true);
+            }
+            else
+            {
+                this.scorePopup.Initialize(this.scoreSearch);
+                VisualStateManager.GoToState(this, "ScorePopupOpen", true);
+            }
+        }
+
+        private void ScorePopupClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+        	VisualStateManager.GoToState(this, "ScorePopupClosed", true);
         }
 	}
 }

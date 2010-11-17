@@ -1,0 +1,60 @@
+﻿<phone:PhoneApplicationPage 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+	xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+	xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="clr-namespace:ThinkGo"
+	xmlns:Custom="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" xmlns:ThinkGo_Behaviors="clr-namespace:ThinkGo.Behaviors"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
+	x:Class="ThinkGo.HelpPivot"
+	FontFamily="{StaticResource PhoneFontFamilyNormal}"
+	FontSize="{StaticResource PhoneFontSizeNormal}"
+	Foreground="{StaticResource PhoneForegroundBrush}"
+	SupportedOrientations="Portrait" Orientation="Portrait"
+	shell:SystemTray.IsVisible="True">
+
+	<Grid x:Name="LayoutRoot" Background="Transparent">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		
+		<Custom:Interaction.Triggers>
+			<Custom:EventTrigger EventName="Loaded">
+				<ThinkGo_Behaviors:SetPivotIndexAction TargetName="pivot"/>
+			</Custom:EventTrigger>
+		</Custom:Interaction.Triggers>
+		
+		<!--TitlePanel contains the name of the application and page title-->
+		<StackPanel x:Name="TitlePanel" Grid.Row="0">
+			<local:ThinkGoTitle/>
+		</StackPanel>
+
+		<!--Pivot Control-->
+		<controls:Pivot x:Name="pivot" Title="HELP" Grid.Row="1">
+			<controls:PivotItem Header="about">
+				<Grid>
+					<TextBlock TextWrapping="Wrap" Text="Version 1.0" Margin="0" d:LayoutOverrides="Width" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+					<TextBlock TextWrapping="Wrap" Text="Copyright © Gary Linscott 2010" Margin="0,31,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+					<TextBlock HorizontalAlignment="Center" Margin="0,111,0,0" TextWrapping="Wrap" Text="Developed by Gary Linscott" VerticalAlignment="Top"/>
+					<TextBlock Margin="0,140,0,0" TextWrapping="Wrap" Text="Thanks to Liza, Mom and Dad, and Unni" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+					<TextBlock Margin="48,210,42,0" TextWrapping="Wrap" Text="ThinkGo uses random playouts of Go games to pick it's moves.  This is known as UCT with RAVE enhancements.  It would not have been possible without the great work of Rémi Coulom." VerticalAlignment="Top"/>
+				</Grid>
+			</controls:PivotItem>
+
+			<controls:PivotItem Header="contact">
+				<Grid>
+					<TextBlock HorizontalAlignment="Left" Margin="8,8,0,0" TextWrapping="Wrap" Text="Questions or problems?" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" FontSize="24"/>
+					<TextBlock HorizontalAlignment="Left" Margin="8,59,0,0" TextWrapping="Wrap" Text="E-mail:" VerticalAlignment="Top" FontSize="24"/>
+					<HyperlinkButton Content="support@forwardcoding.com" NavigateUri="mailto:support@forwardcoding.com" Margin="74,61,65,0" VerticalAlignment="Top"/>
+
+					<TextBlock HorizontalAlignment="Left" Margin="8,113,0,0" TextWrapping="Wrap" Text="Web:" VerticalAlignment="Top" FontSize="24"/>
+					<HyperlinkButton Content="http://forwardcoding.com/thinkgo" NavigateUri="http://forwardcoding.com/thinkgo" Margin="51,115,31,0" VerticalAlignment="Top"/>
+				</Grid>
+			</controls:PivotItem>
+		</controls:Pivot>
+	</Grid>
+</phone:PhoneApplicationPage>

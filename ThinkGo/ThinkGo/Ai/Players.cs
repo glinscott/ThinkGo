@@ -62,6 +62,8 @@
         {
             this.search.SearchLoop();
             List<int> moves = this.search.FindBestSequence();
+            if (moves.Count == 0)
+                return GoBoard.MovePass;
             return moves[0];
         }
     }

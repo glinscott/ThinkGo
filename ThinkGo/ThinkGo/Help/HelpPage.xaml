@@ -6,6 +6,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:ThinkGo"
+	xmlns:Custom="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" xmlns:Phone_Controls="clr-namespace:Phone.Controls;assembly=Phone.Controls"
 	mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
 	x:Class="ThinkGo.HelpPage"
 	FontFamily="{StaticResource PhoneFontFamilyNormal}"
@@ -30,8 +31,20 @@
 		<!--ContentPanel - place additional content here-->
 		<Grid x:Name="ContentPanel" Grid.Row="1">
 			<ListBox Margin="12">
-				<Button Content="About ThinkGo" Style="{StaticResource ListBoxButton}" />
-				<Button Content="Contact Support" Style="{StaticResource ListBoxButton}" />
+				<Button Content="About ThinkGo" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Help/HelpPivot.xaml"/>
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
+				<Button Content="Contact Support" Style="{StaticResource ListBoxButton}" >
+					<Custom:Interaction.Triggers>
+						<Custom:EventTrigger EventName="Click">
+							<Phone_Controls:NavigateToPivotAction TargetPage="/Help/HelpPivot.xaml" PivotIndex="1" />
+						</Custom:EventTrigger>
+					</Custom:Interaction.Triggers>
+				</Button>
 			</ListBox>
 		</Grid>
 	</Grid>
