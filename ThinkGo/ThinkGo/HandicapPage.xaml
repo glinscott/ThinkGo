@@ -7,17 +7,25 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:ThinkGo"
 	xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+	xmlns:SampleData="clr-namespace:Expression.Blend.SampleData.SampleDataSource"
 	mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
 	x:Class="ThinkGo.HandicapPage"
 	Orientation="Portrait"
 	shell:SystemTray.IsVisible="True">
 	<phone:PhoneApplicationPage.Resources>
+		<SampleData:SampleDataSource x:Key="SampleDataSource" d:IsDataSource="True"/>
 		<ItemsPanelTemplate x:Key="ItemsPanelTemplate1">
-			<toolkit:WrapPanel/>
+			<toolkit:WrapPanel />
 		</ItemsPanelTemplate>
-		<DataTemplate x:Key="DataTemplate1">
-			<Border BorderBrush="{StaticResource PhoneForegroundBrush}" BorderThickness="2" Width="40" Height="40">
-				<ContentPresenter/>
+		<DataTemplate x:Key="ItemTemplate1">
+			<Border BorderBrush="{StaticResource PhoneForegroundBrush}" BorderThickness="2" Width="80" Height="80" Margin="0,0,3,3">
+				<TextBlock Text="{Binding}" FontSize="48" Margin="26,0,0,0"/>
+			</Border>
+		</DataTemplate>
+
+		<DataTemplate x:Key="ItemTemplate2">
+			<Border BorderBrush="{StaticResource PhoneForegroundBrush}" BorderThickness="2" Width="80" Height="80" Margin="0,0,3,3">
+				<TextBlock Text="{Binding}" FontSize="48" Margin="12,0,0,0"/>
 			</Border>
 		</DataTemplate>
 	</phone:PhoneApplicationPage.Resources>
@@ -31,7 +39,7 @@
 	<phone:PhoneApplicationPage.Foreground>
 		<StaticResource ResourceKey="PhoneForegroundBrush"/>
 	</phone:PhoneApplicationPage.Foreground>
-	<Grid x:Name="LayoutRoot" Background="Transparent">
+	<Grid x:Name="LayoutRoot" Background="Transparent" d:DataContext="{Binding Source={StaticResource SampleDataSource}}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
@@ -46,9 +54,9 @@
 		<!--ContentPanel - place additional content here-->
 		<Grid x:Name="ContentPanel" Grid.Row="1">
 			<TextBlock HorizontalAlignment="Left" Margin="24,25,0,0" TextWrapping="Wrap" Text="Komi" VerticalAlignment="Top"/>
-			<TextBlock HorizontalAlignment="Left" Margin="21,124,0,0" TextWrapping="Wrap" Text="Handicap Stones" VerticalAlignment="Top"/>
-			<TextBox Height="74" Margin="7,53,34,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" InputScope="Number"/>
-			<ListBox x:Name="StoneButtons" Margin="22,165,42,191" ItemsPanel="{StaticResource ItemsPanelTemplate1}" ItemTemplate="{StaticResource DataTemplate1}" />
+			<TextBlock HorizontalAlignment="Left" Margin="21,267,0,0" TextWrapping="Wrap" Text="Handicap Stones" VerticalAlignment="Top"/>
+			<ListBox x:Name="StoneButtons" Margin="22,0,42,125" ItemsPanel="{StaticResource ItemsPanelTemplate1}" ItemTemplate="{StaticResource ItemTemplate1}" ItemsSource="{Binding Collection}" Height="174" VerticalAlignment="Bottom" />
+			<ListBox x:Name="KomiButtons" Margin="22,62,42,0" ItemsPanel="{StaticResource ItemsPanelTemplate1}" ItemTemplate="{StaticResource ItemTemplate2}" ItemsSource="{Binding Collection}" Height="174" VerticalAlignment="Top" />
 		</Grid>
 	</Grid>
 </phone:PhoneApplicationPage>

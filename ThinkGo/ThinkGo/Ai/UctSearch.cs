@@ -15,6 +15,7 @@
         private UctNode rootNode = null;
         private byte ourColor;
         private int numSimulations = 1000;
+        private double millisecondsToSearch = 0;
 
         private float biasTermConstant = 0.7f;
         private float raveWeightInitial = 1.0f;
@@ -53,14 +54,31 @@
             this.numSimulations = numSimulations;
         }
 
+        public void SetMillisecondsToSearch(double millisecondsToSearch)
+        {
+            this.millisecondsToSearch = millisecondsToSearch;
+        }
+
         public void SearchLoop()
         {
             this.ourColor = this.rootBoard.ToMove;
             this.rootNode = new UctNode(new MoveInfo(GoBoard.MoveNull));
 
+            DateTime startTime = DateTime.Now;
+
             int numberGames = 0;
-            while (numberGames < this.numSimulations)
+            for (;;)
             {
+                if (this.millisecondsToSearch != 0)
+                {
+                    if ((DateTime.Now - startTime).TotalMilliseconds > this.millisecondsToSearch)
+                        break;
+                }
+                else if (numberGames >= this.numSimulations)
+                {
+                    break;
+                }
+
                 this.PlayGame();
                 numberGames++;
             }

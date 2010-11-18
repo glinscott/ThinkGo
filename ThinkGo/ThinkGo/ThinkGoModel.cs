@@ -1,6 +1,7 @@
 ﻿namespace ThinkGo
 {
     using System.ComponentModel;
+    using System;
 
     public enum MoveMarkerOption
     {
@@ -15,6 +16,9 @@
         private MoveMarkerOption moveMarkerOption = MoveMarkerOption.Text2;
         private bool showDropCursor = true;
         private bool soundEnabled = true;
+
+        private float komi = 6.5f;
+        private int handicap = 0;
 
 		public ThinkGoModel()
 		{
@@ -73,9 +77,35 @@
             }
         }
 
+        public float Komi
+        {
+            get { return this.komi; }
+            set
+            {
+                if (Math.Abs(this.komi - value) > 1e-6)
+                {
+                    this.komi = value;
+                    this.FirePropertyChanged("Komi");
+                }
+            }
+        }
+
+        public int Handicap
+        {
+            get { return this.handicap; }
+            set
+            {
+                if (this.handicap != value)
+                {
+                    this.handicap = value;
+                    this.FirePropertyChanged("Handicap");
+                }
+            }
+        }
+
         public void NewGame(int boardSize, GoPlayer whitePlayer, GoPlayer blackPlayer)
         {
-            this.ActiveGame = new GoGame(boardSize, whitePlayer, blackPlayer);
+            this.ActiveGame = new GoGame(boardSize, whitePlayer, blackPlayer, this.handicap, this.komi);
         }
 
 		public event PropertyChangedEventHandler PropertyChanged;

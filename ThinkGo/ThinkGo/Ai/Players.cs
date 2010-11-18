@@ -58,6 +58,11 @@
             this.search.SetNumSimulations(numSimulations);
         }
 
+        public void SetMillisecondsToSearch(double millisecondsToSearch)
+        {
+            this.search.SetMillisecondsToSearch(millisecondsToSearch);
+        }
+
         public override int GetMove()
         {
             this.search.SearchLoop();

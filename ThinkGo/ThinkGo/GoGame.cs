@@ -11,17 +11,54 @@
     public class GoGame : INotifyPropertyChanged
     {
         private List<int> moves = new List<int>();
+        private int handicap;
 
-        public GoGame(int size, GoPlayer whitePlayer, GoPlayer blackPlayer)
+        public GoGame(int size, GoPlayer whitePlayer, GoPlayer blackPlayer, int handicap, float komi)
         {
             this.Board = new GoBoard(size);
             this.Board.Reset();
+            this.Board.Komi = komi;
+
+            this.handicap = handicap;
+            this.InitializeHandicap();
 
             this.WhitePlayer = whitePlayer;
             this.BlackPlayer = blackPlayer;
 
             this.InitializeComputer(this.WhitePlayer);
             this.InitializeComputer(this.BlackPlayer);
+        }
+
+        private void InitializeHandicap()
+        {
+            int small = this.Board.Size < 13 ? 2 : 3;
+            int large = this.Board.Size < 13 ? this.Board.Size - 3 : this.Board.Size - 4;
+            int center = this.Board.Size / 2;
+
+            if (this.handicap >= 1)
+            {
+                this.Board.ToMove = GoBoard.White;
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(small, small), GoBoard.Black);
+            }
+            if (this.handicap >= 2)
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(large, large), GoBoard.Black);
+            if (this.handicap >= 3)
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(small, large), GoBoard.Black);
+            if (this.handicap >= 4)
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(large, small), GoBoard.Black);
+            if (this.handicap == 5)
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(center, center), GoBoard.Black);
+            if (this.handicap >= 6)
+            {
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(center, large), GoBoard.Black);
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(center, small), GoBoard.Black);
+            }
+            if (this.handicap >= 7)
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(center, center), GoBoard.Black);
+            if (this.handicap >= 8)
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(large, center), GoBoard.Black);
+            if (this.handicap >= 9)
+                this.Board.PlaceNonPlayedStone(GoBoard.GeneratePoint(small, center), GoBoard.Black);
         }
 
         private void InitializeComputer(GoPlayer player)
@@ -87,6 +124,7 @@
         public void UndoMove()
         {
             this.Board.Reset();
+            this.InitializeHandicap();
 
             int takeBack = 1;
             if ((this.Board.ToMove == GoBoard.White && this.BlackPlayer.IsComputer) ||
@@ -135,7 +173,7 @@
 
     public class GoAIPlayer : GoPlayer
     {
-        private Player computer;
+        private UctPlayer computer;
 
         public GoAIPlayer()
             : base("ThinkGo")
@@ -149,6 +187,7 @@
 
         public int GetMove()
         {
+            this.computer.SetMillisecondsToSearch(this.TimeSetting.Milliseconds);
             return this.computer.GetMove();
         }
 

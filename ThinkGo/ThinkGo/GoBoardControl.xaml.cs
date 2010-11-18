@@ -37,6 +37,25 @@
             this.worker.RunWorkerCompleted += this.worker_RunWorkerCompleted;
 		}
 
+        public bool IsThinking
+        {
+            get { return this.isThinking; }
+        }
+
+        public void CancelThink()
+        {
+            if (this.isThinking)
+            {
+                this.worker.CancelAsync();
+                this.isThinking = false;
+
+                if (this.DoneThinking != null)
+                {
+                    this.DoneThinking(this, EventArgs.Empty);
+                }
+            }
+        }
+
         public void ShowEstimate(double[] estimate)
         {
             int boardSize = this.game.Board.Size;
@@ -123,7 +142,9 @@
 			this.pieces = new Rectangle[boardSize * boardSize];
             this.CreateRectangles(this.PieceCanvas, this.pieces, 1.0);
 
-			PathGeometry geometry = new PathGeometry();
+            PathGeometry geometry = new PathGeometry();
+            GeometryGroup group = new GeometryGroup();
+            group.Children.Add(geometry);
 
             int bottom = this.pieceSize * boardSize - edgeOffset;
 
@@ -134,21 +155,27 @@
 				
 				geometry.Figures.Add(this.DrawLine(position, edgeOffset, position, bottom));
 				geometry.Figures.Add(this.DrawLine(edgeOffset, position, bottom, position));
-
-				if (i == this.game.Board.Size / 2)
-				{
-					EllipseGeometry eg = new EllipseGeometry();
-					
-				}
-				else if (i == this.game.Board.Size / 3)
-				{
-				}
-				else if (i == (this.game.Board.Size * 2) / 3)
-				{
-				}
 			}
 
-			this.BoardBackground.Data = geometry;
+            int small = this.game.Board.Size < 13 ? 2 : 3;
+            int large = this.game.Board.Size < 13 ? this.game.Board.Size - 3 : this.game.Board.Size - 4;
+            int center = this.game.Board.Size / 2;
+            
+            this.DrawEllipse(group, small, small);
+            this.DrawEllipse(group, small, large);
+            this.DrawEllipse(group, large, small);
+            this.DrawEllipse(group, large, large);
+            this.DrawEllipse(group, center, center);
+
+            if (this.game.Board.Size >= 13)
+            {
+                this.DrawEllipse(group, small, center);
+                this.DrawEllipse(group, large, center);
+                this.DrawEllipse(group, center, large);
+                this.DrawEllipse(group, center, small);
+            }
+
+			this.BoardBackground.Data = group;
 
 			// Draw the border
 			geometry = new PathGeometry();
@@ -163,6 +190,19 @@
 
 			this.CheckComputerTurn();
 		}
+
+        private void DrawEllipse(GeometryGroup group, int x, int y)
+        {
+            int xPos = this.edgeOffset + x * this.pieceSize;
+            int yPos = this.edgeOffset + y * this.pieceSize;
+
+            double radius = 5;
+            EllipseGeometry ellipse = new EllipseGeometry();
+            ellipse.Center = new Point(this.RoundLine(xPos), this.RoundLine(yPos));
+            ellipse.RadiusX = radius;
+            ellipse.RadiusY = radius;
+            group.Children.Add(ellipse);
+        }
 
 		private void OnGamePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -294,7 +334,7 @@
             if (aiPlayer != null && !this.isThinking)
             {
                 this.isThinking = true;
-                worker.RunWorkerAsync(aiPlayer);
+                this.worker.RunWorkerAsync(aiPlayer);
 
                 if (this.StartedThinking != null)
                 {

@@ -535,6 +535,21 @@
 			this.DebugVerify();
 		}
 
+        public void PlaceNonPlayedStone(int move, byte color)
+        {
+            int lastMove = this.LastMove;
+            int secondLastMove = this.SecondLastMove;
+            byte toMove = this.ToMove;
+
+            this.ToMove = color;
+            this.PlaceStone(move);
+
+            // Restore the state to original
+            this.ToMove = toMove;
+            this.LastMove = lastMove;
+            this.SecondLastMove = secondLastMove;
+        }
+
         public List<int> PlaceStone(int move)
 		{
 			this.CapturedStones.Clear();

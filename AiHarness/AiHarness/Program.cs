@@ -178,7 +178,7 @@ namespace AiHarness
 
 
             GameSimulator.PrintBoard(board);
-            float value = board.ScoreSimpleEndPosition(board.Komi);
+            float value = board.ScoreSimpleEndPosition(board.Komi, null);
 			//Console.WriteLine(value + " " + ((value > 0) ? "Black wins" : "White wins"));
 			return value > 0 ? 1 : (value < 0 ? 0 : 0.5f);
 		}

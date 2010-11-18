@@ -72,6 +72,16 @@ namespace ThinkGo
             this.aiSettings.Style = (Style)this.Resources["Custom"];
             this.aiSettings.AnimationFinished += new EventHandler(aiSettings_Closed);
             this.aiSettings.Title = "Time per move";
+
+            this.Loaded += this.NewGame_Loaded;
+        }
+
+        void NewGame_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ThinkGoModel.Instance.Handicap != 0)
+                this.HandicapText.Text = string.Format("{0} stone{1}", ThinkGoModel.Instance.Handicap, ThinkGoModel.Instance.Handicap > 1 ? "s" : string.Empty);
+            else
+                this.HandicapText.Text = string.Format("{0} komi", ThinkGoModel.Instance.Komi);
         }
 
         void aiSettings_Closed(object sender, EventArgs e)

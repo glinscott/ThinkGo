@@ -100,6 +100,7 @@
 
         private void UndoClicked(object sender, System.EventArgs e)
         {
+            this.GoBoardControl.CancelThink();
 			this.model.ActiveGame.UndoMove();
         }
 
@@ -110,11 +111,17 @@
 
         private void PassClicked(object sender, System.EventArgs e)
         {
-			this.model.ActiveGame.PlayMove(GoBoard.MovePass);
+            if (this.GoBoardControl.IsThinking)
+                return;
+
+            this.model.ActiveGame.PlayMove(GoBoard.MovePass);
         }
 
         private void ScoreClicked(object sender, System.EventArgs e)
         {
+            if (this.GoBoardControl.IsThinking)
+                return;
+
             double estimate = this.ShowTerritory();
             GoPlayer player = this.model.ActiveGame.Board.ToMove == GoBoard.Black ? this.model.ActiveGame.BlackPlayer : this.model.ActiveGame.WhitePlayer;
             this.ScoreEstimateText.Text = string.Format("{0} has a {1}.{2}% chance of winning", player.Name, (int)(estimate * 100), (int)(estimate * 1000) % 10);

@@ -1,8 +1,6 @@
-﻿- Handicap settings
-- Half decent splash screen
-- Marker positions on board (circles)
+﻿- Half decent splash screen
 - Add sounds
-- Better icon for pass, and view score
+- Handling tombstoning
 
 - AI needs to avoid playing into living groups
 

@@ -20,8 +20,8 @@
 				<shell:ApplicationBarMenuItem Text="resign" Click="ResignClicked"/>
 			</shell:ApplicationBar.MenuItems>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.undo.rest.png" Text="Undo" Click="UndoClicked"/>
-			<shell:ApplicationBarIconButton IconUri="/icons/appbar.check.rest.png" Text="Pass" Click="PassClicked"/>
-			<shell:ApplicationBarIconButton IconUri="/icons/appbar.check.rest.png" Text="Score" Click="ScoreClicked"/>
+			<shell:ApplicationBarIconButton IconUri="/icons/appbar.pass.rest.png" Text="Pass" Click="PassClicked"/>
+			<shell:ApplicationBarIconButton IconUri="/icons/appbar.score.rest.png" Text="Score" Click="ScoreClicked"/>
 			<shell:ApplicationBarIconButton IconUri="/icons/appbar.feature.settings.rest.png" Text="Settings" Click="SettingsClicked"/>
 		</shell:ApplicationBar>
 	</phone:PhoneApplicationPage.ApplicationBar>
