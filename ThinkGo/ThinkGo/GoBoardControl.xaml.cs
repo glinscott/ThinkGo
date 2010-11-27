@@ -263,13 +263,18 @@
 			base.OnMouseMove(e);
 		}
 
+
         private void PlayMove(int move)
         {
+            bool wasCapture = false;
             foreach (int deletedPiece in this.game.PlayMove(move))
             {
+                wasCapture = true;
                 this.UpdatePiece(deletedPiece);
             }
             this.UpdatePiece(move);
+
+            Sounds.PlaySound(wasCapture ? Sounds.Capture : Sounds.PlaceStone);
 
             this.RefreshMoveNumbers();
         }

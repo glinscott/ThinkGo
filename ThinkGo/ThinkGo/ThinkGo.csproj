@@ -57,6 +57,7 @@
       <HintPath>External\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone.Interop" />
+    <Reference Include="Microsoft.Xna.Framework" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -119,6 +120,7 @@
     <Compile Include="SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Sounds.cs" />
     <Compile Include="ThinkGoModel.cs" />
     <Compile Include="ThinkGoTitle.xaml.cs">
       <DependentUpon>ThinkGoTitle.xaml</DependentUpon>
@@ -233,6 +235,9 @@
     </Content>
     <Resource Include="Images\boardbg.jpg" />
     <Content Include="issues.txt" />
+    <Content Include="Sounds\Capture.wav" />
+    <Content Include="Sounds\PlayStone.wav" />
+    <Content Include="Sounds\Undo.wav" />
     <Content Include="SplashScreenImage.jpg" />
     <Resource Include="Images\Title.png" />
     <Resource Include="Title.png" />

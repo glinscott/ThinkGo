@@ -19,13 +19,13 @@
 		</ItemsPanelTemplate>
 		<DataTemplate x:Key="ItemTemplate1">
 			<Border BorderBrush="{StaticResource PhoneForegroundBrush}" BorderThickness="2" Width="80" Height="80" Margin="0,0,3,3">
-				<TextBlock Text="{Binding}" FontSize="48" Margin="26,0,0,0"/>
+				<TextBlock Text="{Binding}" FontSize="48" Margin="26,2,0,-2"/>
 			</Border>
 		</DataTemplate>
 
 		<DataTemplate x:Key="ItemTemplate2">
 			<Border BorderBrush="{StaticResource PhoneForegroundBrush}" BorderThickness="2" Width="80" Height="80" Margin="0,0,3,3">
-				<TextBlock Text="{Binding}" FontSize="48" Margin="12,0,0,0"/>
+				<TextBlock Text="{Binding}" FontSize="48" Margin="7,1,5,-1"/>
 			</Border>
 		</DataTemplate>
 	</phone:PhoneApplicationPage.Resources>

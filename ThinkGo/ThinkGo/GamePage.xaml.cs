@@ -102,6 +102,8 @@
         {
             this.GoBoardControl.CancelThink();
 			this.model.ActiveGame.UndoMove();
+            
+            Sounds.PlaySound(Sounds.Undo);
         }
 
         private void SettingsClicked(object sender, System.EventArgs e)
