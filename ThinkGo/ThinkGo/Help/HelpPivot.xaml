@@ -49,10 +49,10 @@
 				<Grid>
 					<TextBlock HorizontalAlignment="Left" Margin="8,8,0,0" TextWrapping="Wrap" Text="Questions or problems?" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" FontSize="24"/>
 					<TextBlock HorizontalAlignment="Left" Margin="8,59,0,0" TextWrapping="Wrap" Text="E-mail:" VerticalAlignment="Top" FontSize="24"/>
-					<HyperlinkButton Content="support@forwardcoding.com" NavigateUri="mailto:support@forwardcoding.com" Margin="74,61,65,0" VerticalAlignment="Top"/>
+                    <HyperlinkButton Content="support@forwardcoding.com" NavigateUri="mailto:support@forwardcoding.com" Margin="74,61,65,0" VerticalAlignment="Top" TargetName="_blank"/>
 
 					<TextBlock HorizontalAlignment="Left" Margin="8,113,0,0" TextWrapping="Wrap" Text="Web:" VerticalAlignment="Top" FontSize="24"/>
-					<HyperlinkButton Content="http://forwardcoding.com/thinkgo" NavigateUri="http://forwardcoding.com/thinkgo" Margin="51,115,31,0" VerticalAlignment="Top"/>
+                    <HyperlinkButton Content="http://forwardcoding.com/thinkgo" NavigateUri="http://forwardcoding.com/thinkgo" Margin="51,115,31,0" VerticalAlignment="Top" TargetName="_blank"/>
 				</Grid>
 			</controls:PivotItem>
 		</controls:Pivot>

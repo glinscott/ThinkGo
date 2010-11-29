@@ -1,9 +1,7 @@
-﻿- Half decent splash screen (test launch time)
-- Can't use more than 90mb of ram (DeviceExtendedProperties - ApplicationPeakMemoryUsage, DeviceTotalMemory)
+﻿- Can't use more than 90mb of ram (DeviceExtendedProperties - ApplicationPeakMemoryUsage, DeviceTotalMemory)
 - Trial mode (play 3 games)
 
 - AI needs to avoid playing into living groups
-- AI can quit if ahead
 
 Bugs:
-- Crash when clicking on links in help/about
+- None known!

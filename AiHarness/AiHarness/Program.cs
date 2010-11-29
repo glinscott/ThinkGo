@@ -61,11 +61,14 @@ namespace AiHarness
 					}
 				}
 
-				this.Iterate((byte)i);
+                // TODO: for now, we will use a heuristic here
+
+
+//				this.Iterate((byte)i);
 			}
 		}
 
-		private void Iterate(byte c)
+/*		private void Iterate(byte c)
 		{
 			bool changed = true;
 			while (changed)
@@ -83,7 +86,7 @@ namespace AiHarness
 					}
 				}
 			}
-		}
+		}*/
 
 		private Region BuildRegion(Region region, byte excludedColor, int x, int y, int regionNumber)
 		{

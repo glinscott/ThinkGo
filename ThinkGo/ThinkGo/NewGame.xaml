@@ -70,22 +70,7 @@
 			<RowDefinition Height="Auto" MinHeight="92"/>
 			<RowDefinition Height="Auto" MinHeight="291"/>
 		</Grid.RowDefinitions>
-		<Button Content="Start" VerticalAlignment="Bottom" Margin="0,0,0,49" Click="PlayGame" Grid.Row="4"/>
-        
-        <TextBlock Margin="0,-3,206,0" TextWrapping="Wrap" Text="Board Size" Height="34" Grid.Row="3" VerticalAlignment="Top"/>
-        <pc:ListPicker x:Name="BoardSizePicker" Margin="0,28,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="3">
-            <pc:ListPicker.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" Margin="8,0,0,0" />
-                </DataTemplate>
-            </pc:ListPicker.ItemTemplate>
-        </pc:ListPicker>
-        <Image Source="Images/Go_b.png" Width="32" HorizontalAlignment="Left" Margin="0,3,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="1"/>
-        <Image Source="Images/Go_w.png" Width="32" HorizontalAlignment="Left" Margin="0,5,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="2"/>
-        <TextBlock HorizontalAlignment="Left" Height="31" Margin="37,5,0,0" TextWrapping="Wrap" Text="Black Player" VerticalAlignment="Top" Width="131" Grid.Row="1"/>
-        <TextBlock HorizontalAlignment="Left" Margin="37,7,0,0" TextWrapping="Wrap" Text="White Player" VerticalAlignment="Top" Grid.Row="2"/>
-        <TextBlock Margin="0,-1,206,0" TextWrapping="Wrap" Grid.Row="4" Height="34" VerticalAlignment="Top"><Run Text="Handicap"/><LineBreak/><Run/></TextBlock>
-        <pc:ListPicker x:Name="BlackPlayerPicker" Margin="0,41,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="1">
+		<pc:ListPicker x:Name="BlackPlayerPicker" Margin="0,41,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="1">
         	<pc:ListPicker.ItemTemplate>
         		<DataTemplate>
         			<Grid Width="390">
@@ -107,6 +92,21 @@
 				</DataTemplate>
 			</pc:ListPicker.ItemTemplate>
 		</pc:ListPicker>
+		<Button Content="Start" VerticalAlignment="Bottom" Margin="0,0,0,49" Click="PlayGame" Grid.Row="4"/>
+        
+        <TextBlock Margin="0,-3,206,0" TextWrapping="Wrap" Text="Board Size" Height="34" Grid.Row="3" VerticalAlignment="Top"/>
+        <pc:ListPicker x:Name="BoardSizePicker" Margin="0,28,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="3">
+            <pc:ListPicker.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Margin="8,0,0,0" />
+                </DataTemplate>
+            </pc:ListPicker.ItemTemplate>
+        </pc:ListPicker>
+        <Image Source="Images/Go_b.png" Width="32" HorizontalAlignment="Left" Margin="0,3,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="1"/>
+        <Image Source="Images/Go_w.png" Width="32" HorizontalAlignment="Left" Margin="0,5,0,0" Height="32" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment" Grid.Row="2"/>
+        <TextBlock HorizontalAlignment="Left" Height="31" Margin="37,5,0,0" TextWrapping="Wrap" Text="Black Player" VerticalAlignment="Top" Width="131" Grid.Row="1"/>
+        <TextBlock HorizontalAlignment="Left" Margin="37,7,0,0" TextWrapping="Wrap" Text="White Player" VerticalAlignment="Top" Grid.Row="2"/>
+        <TextBlock Margin="0,-1,206,0" TextWrapping="Wrap" Grid.Row="4" Height="34" VerticalAlignment="Top"><Run Text="Handicap"/><LineBreak/><Run/></TextBlock>
 		<Rectangle Fill="#FFCBCBCB" Height="48" Margin="0,32,0,0" Grid.Row="4" Stroke="Black" VerticalAlignment="Top" MouseLeftButtonDown="HandicapClick"/>
 		<TextBlock x:Name="HandicapText" HorizontalAlignment="Left" Margin="7,32,0,0" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{StaticResource PhoneTextBoxForegroundBrush}" FontSize="32" IsHitTestVisible="False"/>
 	</Grid>
