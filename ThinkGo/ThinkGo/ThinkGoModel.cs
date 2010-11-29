@@ -2,6 +2,8 @@
 {
     using System.ComponentModel;
     using System;
+    using System.IO.IsolatedStorage;
+    using System.Diagnostics;
 
     public enum MoveMarkerOption
     {
@@ -20,8 +22,21 @@
         private float komi = 6.5f;
         private int handicap = 0;
 
+        private IsolatedStorageSettings isolatedStore;
+
 		public ThinkGoModel()
 		{
+            try
+            {
+                // Get the settings for this application.
+                this.isolatedStore = IsolatedStorageSettings.ApplicationSettings;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Exception while using IsolatedStorageSettings: " + e.ToString());
+            }
+
+            this.RefreshFromIsolatedStore();
 		}
 
         private static ThinkGoModel instance = null;
@@ -38,6 +53,11 @@
         }
 
 		public GoGame ActiveGame { get; private set; }
+        public void Deserialize(SimplePropertyReader reader)
+        {
+            this.ActiveGame = GoGame.DeSerialize(reader);
+        }
+
         public MoveMarkerOption MoveMarkerOption
         {
             get { return this.moveMarkerOption; }
@@ -108,10 +128,46 @@
             this.ActiveGame = new GoGame(boardSize, whitePlayer, blackPlayer, this.handicap, this.komi);
         }
 
+        private void UpdateIsolatedStore()
+        {
+            if (this.isolatedStore != null)
+            {
+                this.isolatedStore["MoveMarkerOption"] = this.MoveMarkerOption;
+                this.isolatedStore["ShowDropCursor"] = this.ShowDropCursor;
+                this.isolatedStore["SoundEnabled"] = this.SoundEnabled;
+                this.isolatedStore["Komi"] = this.Komi;
+                this.isolatedStore["Handicap"] = this.Handicap;
+                this.isolatedStore.Save();
+            }
+        }
+
+        private void RefreshFromIsolatedStore()
+        {
+            if (this.isolatedStore != null)
+            {
+                if (!this.isolatedStore.TryGetValue<MoveMarkerOption>("MoveMarkerOption", out this.moveMarkerOption))
+                    this.moveMarkerOption = MoveMarkerOption.Text2;
+
+                if (!this.isolatedStore.TryGetValue<bool>("ShowDropCursor", out this.showDropCursor))
+                    this.showDropCursor = true;
+
+                if (!this.isolatedStore.TryGetValue<bool>("SoundEnabled", out this.soundEnabled))
+                    this.soundEnabled = true;
+
+                if (!this.isolatedStore.TryGetValue<float>("Komi", out this.komi))
+                    this.komi = 6.5f;
+
+                if (!this.isolatedStore.TryGetValue<int>("Handicap", out this.handicap))
+                    this.handicap = 0;
+            }
+        }
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
         private void FirePropertyChanged(string name)
         {
+            this.UpdateIsolatedStore();
+
             if (this.PropertyChanged != null)
             {
                 this.PropertyChanged(this, new PropertyChangedEventArgs(name));

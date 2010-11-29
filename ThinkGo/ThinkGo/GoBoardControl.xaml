@@ -15,7 +15,7 @@
         <Path x:Name="BoardBackground" Fill="Black" Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" Stretch="None" Width="480" Height="480" />
         <Path x:Name="BoardEdge" Fill="{x:Null}" Stroke="Black" StrokeThickness="3" UseLayoutRounding="True" Stretch="None" Width="480" Height="480"/>
 		<Canvas x:Name="PieceCanvas" />
-        <Canvas x:Name="ScoreEstimateCanvas" />
+        <Canvas x:Name="ScoreEstimateCanvas" Width="480" Height="480" />
         <Path x:Name="DropTemp" Fill="{x:Null}" Stroke="Orange" StrokeThickness="3" />
     </Canvas>
 </UserControl>

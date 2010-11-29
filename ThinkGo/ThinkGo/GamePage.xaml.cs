@@ -14,6 +14,7 @@
 		private GoGame activeGame;
 		private ApplicationBarIconButton undoButton;
         private UctSearch scoreSearch;
+        private bool isComputingScore;
 
         public GamePage()
         {
@@ -100,6 +101,9 @@
 
         private void UndoClicked(object sender, System.EventArgs e)
         {
+            if (this.model.ActiveGame == null || !this.model.ActiveGame.CanUndo)
+                return;
+
             this.GoBoardControl.CancelThink();
 			this.model.ActiveGame.UndoMove();
             
@@ -121,12 +125,20 @@
 
         private void ScoreClicked(object sender, System.EventArgs e)
         {
-            if (this.GoBoardControl.IsThinking)
+            if (this.GoBoardControl.IsThinking || this.isComputingScore)
                 return;
 
-            double estimate = this.ShowTerritory();
-            GoPlayer player = this.model.ActiveGame.Board.ToMove == GoBoard.Black ? this.model.ActiveGame.BlackPlayer : this.model.ActiveGame.WhitePlayer;
-            this.ScoreEstimateText.Text = string.Format("{0} has a {1}.{2}% chance of winning", player.Name, (int)(estimate * 100), (int)(estimate * 1000) % 10);
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (this.isComputingScore)
+                    return;
+
+                this.isComputingScore = true;
+                double estimate = this.ShowTerritory() * 100;
+                GoPlayer player = this.model.ActiveGame.Board.ToMove == GoBoard.Black ? this.model.ActiveGame.BlackPlayer : this.model.ActiveGame.WhitePlayer;
+                this.ScoreEstimateText.Text = string.Format("{0} has a {1}% chance of winning", player.Name, Math.Max(0, Math.Min(100, (int)(estimate))));
+                this.isComputingScore = false;
+            }));
         }
 
         private void ShowScorePopup(object sender, System.Windows.RoutedEventArgs e)

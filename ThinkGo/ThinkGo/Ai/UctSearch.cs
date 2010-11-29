@@ -16,6 +16,7 @@
         private byte ourColor;
         private int numSimulations = 1000;
         private double millisecondsToSearch = 0;
+        private bool searching;
 
         private float biasTermConstant = 0.7f;
         private float raveWeightInitial = 1.0f;
@@ -59,15 +60,21 @@
             this.millisecondsToSearch = millisecondsToSearch;
         }
 
-        public void SearchLoop()
+        public void CancelSearch()
+        {
+            this.searching = false;
+        }
+
+        public bool SearchLoop()
         {
             this.ourColor = this.rootBoard.ToMove;
             this.rootNode = new UctNode(new MoveInfo(GoBoard.MoveNull));
+            this.searching = true;
 
             DateTime startTime = DateTime.Now;
 
             int numberGames = 0;
-            for (;;)
+            while (this.searching)
             {
                 if (this.millisecondsToSearch != 0)
                 {
@@ -82,6 +89,8 @@
                 this.PlayGame();
                 numberGames++;
             }
+
+            return this.searching;
         }
 
         public double EstimateScore()
@@ -92,7 +101,7 @@
                 Array.Clear(this.ScoreEstimate, 0, this.ScoreEstimate.Length);
 
                 int oldSimulations = this.numSimulations;
-                this.numSimulations = 1000;
+                this.numSimulations = 200;
                 this.SearchLoop();
 
                 for (int i = 0; i < this.ScoreEstimate.Length; i++)

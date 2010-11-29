@@ -108,6 +108,6 @@
 			</pc:ListPicker.ItemTemplate>
 		</pc:ListPicker>
 		<Rectangle Fill="#FFCBCBCB" Height="48" Margin="0,32,0,0" Grid.Row="4" Stroke="Black" VerticalAlignment="Top" MouseLeftButtonDown="HandicapClick"/>
-		<TextBlock x:Name="HandicapText" HorizontalAlignment="Left" Margin="7,32,0,0" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{StaticResource PhoneTextBoxForegroundBrush}" FontSize="32"/>
+		<TextBlock x:Name="HandicapText" HorizontalAlignment="Left" Margin="7,32,0,0" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{StaticResource PhoneTextBoxForegroundBrush}" FontSize="32" IsHitTestVisible="False"/>
 	</Grid>
 </UserControl>

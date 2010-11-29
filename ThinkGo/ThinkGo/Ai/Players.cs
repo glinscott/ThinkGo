@@ -63,9 +63,16 @@
             this.search.SetMillisecondsToSearch(millisecondsToSearch);
         }
 
+        public void CancelSearch()
+        {
+            this.search.CancelSearch();
+        }
+
         public override int GetMove()
         {
-            this.search.SearchLoop();
+            if (!this.search.SearchLoop())
+                return int.MinValue;
+
             List<int> moves = this.search.FindBestSequence();
             if (moves.Count == 0)
                 return GoBoard.MovePass;

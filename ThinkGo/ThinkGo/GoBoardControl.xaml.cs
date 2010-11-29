@@ -42,11 +42,22 @@
             get { return this.isThinking; }
         }
 
+        private void CancelThink(GoPlayer player)
+        {
+            GoAIPlayer aiPlayer = player as GoAIPlayer;
+            if (aiPlayer != null)
+            {
+                aiPlayer.CancelSearch();
+            }
+        }
+
         public void CancelThink()
         {
             if (this.isThinking)
             {
-                this.worker.CancelAsync();
+                this.CancelThink(this.game.BlackPlayer);
+                this.CancelThink(this.game.WhitePlayer);
+
                 this.isThinking = false;
 
                 if (this.DoneThinking != null)
@@ -266,6 +277,7 @@
 
         private void PlayMove(int move)
         {
+
             bool wasCapture = false;
             foreach (int deletedPiece in this.game.PlayMove(move))
             {
@@ -370,7 +382,7 @@
 
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (!e.Cancelled && e.Result is int)
+            if (this.isThinking && e.Result is int)
             {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                     {
