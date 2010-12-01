@@ -62,7 +62,7 @@ namespace AiHarness
 				}
 
                 // TODO: for now, we will use a heuristic here
-
+                // If the region has 
 
 //				this.Iterate((byte)i);
 			}

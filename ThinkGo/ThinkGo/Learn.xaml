@@ -30,9 +30,9 @@
 				<Phone_Controls:MultiLineItem Line1="Help" Line2="Get help about ThinkGo"/>
 			</Button>
 
-			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5">
+<!--			<Button ContentTemplate="{StaticResource MultiLineButtonTemplate}" HorizontalContentAlignment="Left" Margin="0" Padding="10,3,10,5">
 				<Phone_Controls:MultiLineItem Line1="Online Resources" Line2="Resources about Go on the Internet"/>
-			</Button>
+			</Button> -->
 		</StackPanel>
 	</Grid>
 </UserControl>

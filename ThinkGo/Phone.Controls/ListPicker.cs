@@ -17,6 +17,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using System.Diagnostics;
+using Microsoft.Phone.Controls;
 
 namespace Phone.Controls
 {
@@ -56,6 +57,13 @@ namespace Phone.Controls
             this.SizeChanged += new SizeChangedEventHandler(ListPicker_SizeChanged);
         }
 
+        private static PhoneApplicationFrame RootVisual
+        {
+            get
+            {
+                return Application.Current == null ? null : Application.Current.RootVisual as PhoneApplicationFrame;
+            }
+        }
 
         void ListPicker_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -203,11 +211,21 @@ namespace Phone.Controls
 
         #region helper methods
 
+
+        private void OnBackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            this.HandleExpandCollapse();
+        }
+
         private void HandleExpandCollapse()
         {
 
             if (this.Height <= this.itemHeight)
             {
+                // Hook up into the back key press event of the current page
+                ((PhoneApplicationPage)RootVisual.Content).BackKeyPress += this.OnBackKeyPress;
+
                 // Show border when expanded
                 this.BorderThickness = new Thickness(2);
                 // Create and begin animation   
@@ -220,6 +238,8 @@ namespace Phone.Controls
             }
             else
             {
+                ((PhoneApplicationPage)RootVisual.Content).BackKeyPress -= this.OnBackKeyPress;
+
                 // Hide border
                 this.BorderThickness = new Thickness(0);
                 // Restore background 

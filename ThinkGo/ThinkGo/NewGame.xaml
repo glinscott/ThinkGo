@@ -76,8 +76,9 @@
         			<Grid Width="390">
         				<TextBlock Text="{Binding Name}" Margin="8,0,0,0" />
         				<Path Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" Data="{StaticResource RightArrowData}" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="White" Stroke="Black" Height="20" Width="16" Stretch="Fill" Margin="0,0,8,0" UseLayoutRounding="False"/>
-        				<Ellipse Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Right" Stroke="#B2000000" Width="36" Height="36" StrokeThickness="4" Fill="#00000000" MouseLeftButtonDown="BlackAiPickerClicked"/>
-        			</Grid>
+        				<Ellipse Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Right" Stroke="#B2000000" Width="36" Height="36" StrokeThickness="4" />
+                        <Rectangle Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Right" Width="48" Height="48" Fill="#00000000" MouseLeftButtonDown="BlackAiPickerClicked"/>
+                    </Grid>
         		</DataTemplate>
         	</pc:ListPicker.ItemTemplate>
         </pc:ListPicker>
@@ -86,9 +87,10 @@
 				<DataTemplate>
 					<Grid Width="390">
 						<TextBlock Text="{Binding Name}" Margin="8,0,0,0" />
-						<Path Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" Data="{StaticResource RightArrowData}" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="White" Stroke="Black" Height="20" Width="16" Stretch="Fill" Margin="0,0,8,0" UseLayoutRounding="False"/>
-						<Ellipse Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Right" Stroke="#B2000000" Width="36" Height="36" StrokeThickness="4" Fill="#00000000" MouseLeftButtonDown="WhiteAiPickerClicked"/>
-					</Grid>
+                        <Path Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" Data="{StaticResource RightArrowData}" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="White" Stroke="Black" Height="20" Width="16" Stretch="Fill" Margin="0,0,8,0" UseLayoutRounding="False"/>
+						<Ellipse Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Right" Stroke="#B2000000" Width="36" Height="36" StrokeThickness="4" />
+                        <Rectangle Visibility="{Binding IsComputer, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Right" Width="48" Height="48" Fill="#00000000" MouseLeftButtonDown="WhiteAiPickerClicked"/>
+                    </Grid>
 				</DataTemplate>
 			</pc:ListPicker.ItemTemplate>
 		</pc:ListPicker>

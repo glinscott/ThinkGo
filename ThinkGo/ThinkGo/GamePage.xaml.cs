@@ -175,6 +175,17 @@
             }
         }
 
+        protected override void OnBackKeyPress(CancelEventArgs e)
+        {
+            if (this.scorePopup.Visibility == Visibility.Visible)
+            {
+                VisualStateManager.GoToState(this, "ScorePopupClosed", true);
+                e.Cancel = true;
+            }
+
+            base.OnBackKeyPress(e);
+        }
+
         private void ScorePopupClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
         	VisualStateManager.GoToState(this, "ScorePopupClosed", true);
