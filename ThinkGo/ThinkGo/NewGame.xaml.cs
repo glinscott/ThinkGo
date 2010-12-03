@@ -68,12 +68,31 @@ namespace ThinkGo
             this.BlackPlayerPicker.SelectedIndex = 0;
             this.WhitePlayerPicker.SelectedIndex = 1;
 
+            this.BlackPlayerPicker.SelectionChanged += this.BlackPlayerPicker_SelectionChanged;
+            this.WhitePlayerPicker.SelectionChanged += this.WhitePlayerPicker_SelectionChanged;
+
             this.aiSettings.ItemSource = TimeSetting.TimeSettings;
             this.aiSettings.Style = (Style)this.Resources["Custom"];
             this.aiSettings.AnimationFinished += new EventHandler(aiSettings_Closed);
             this.aiSettings.Title = "Time per move";
 
             this.Loaded += this.NewGame_Loaded;
+        }
+
+        private void BlackPlayerPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.BlackPlayerPicker.SelectedItem is GoAIPlayer)
+            {
+                this.WhitePlayerPicker.SelectedIndex = 0;
+            }
+        }
+
+        private void WhitePlayerPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.WhitePlayerPicker.SelectedItem is GoAIPlayer)
+            {
+                this.BlackPlayerPicker.SelectedIndex = 0;
+            }
         }
 
         void NewGame_Loaded(object sender, RoutedEventArgs e)

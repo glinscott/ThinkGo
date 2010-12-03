@@ -183,6 +183,8 @@
                 e.Cancel = true;
             }
 
+            this.GoBoardControl.CancelThink();
+
             base.OnBackKeyPress(e);
         }
 
