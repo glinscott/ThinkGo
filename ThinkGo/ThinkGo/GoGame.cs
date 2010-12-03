@@ -158,9 +158,6 @@
 
         public void UndoMove()
         {
-            this.Board.Reset();
-            this.InitializeHandicap();
-
             int takeBack = 1;
             if ((this.Board.ToMove == GoBoard.White && this.BlackPlayer.IsComputer) ||
                 (this.Board.ToMove == GoBoard.Black && this.WhitePlayer.IsComputer))
@@ -168,9 +165,14 @@
                 takeBack = 2;
             }
             int end = Math.Max(0, this.moves.Count - takeBack);
+
+            // Restore to original state
+            this.Board.Reset();
+            this.InitializeHandicap();
+
             for (int i = 0; i < end; i++)
             {
-                this.Board.PlaceStone(moves[i]);
+                this.Board.PlaceStone(this.moves[i]);
             }
 
             this.moves.RemoveRange(end, this.moves.Count - end);

@@ -10,6 +10,7 @@
 	using System.ComponentModel;
     using ThinkGo.Ai;
     using System.Windows.Threading;
+    using System.Threading;
 
 	public partial class GoBoardControl : UserControl
 	{
@@ -57,13 +58,6 @@
             {
                 this.CancelThink(this.game.BlackPlayer);
                 this.CancelThink(this.game.WhitePlayer);
-
-                this.isThinking = false;
-
-                if (this.DoneThinking != null)
-                {
-                    this.DoneThinking(this, EventArgs.Empty);
-                }
             }
         }
 
@@ -277,7 +271,6 @@
 
         private void PlayMove(int move)
         {
-
             bool wasCapture = false;
             foreach (int deletedPiece in this.game.PlayMove(move))
             {
@@ -380,14 +373,19 @@
 			base.OnMouseLeftButtonUp(e);
 		}
 
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (this.isThinking && e.Result is int)
             {
+                this.isThinking = false;
+
                 this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        this.isThinking = false;
-                        this.PlayMove((int)e.Result);
+                        int result = (int)e.Result;
+                        if (result != int.MinValue)
+                        {
+                            this.PlayMove(result);
+                        }
 
                         if (this.DoneThinking != null)
                         {
