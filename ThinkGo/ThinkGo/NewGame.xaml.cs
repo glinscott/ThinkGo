@@ -10,6 +10,7 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.Collections.Generic;
 using Phone.Controls;
+using Microsoft.Phone.Tasks;
 
 namespace ThinkGo
 {
@@ -101,6 +102,8 @@ namespace ThinkGo
                 this.HandicapText.Text = string.Format("{0} stone{1}", ThinkGoModel.Instance.Handicap, ThinkGoModel.Instance.Handicap > 1 ? "s" : string.Empty);
             else
                 this.HandicapText.Text = string.Format("{0} komi", ThinkGoModel.Instance.Komi);
+
+            this.ResumeGameButton.Visibility = ThinkGoModel.Instance.ActiveGame != null ? Visibility.Visible : Visibility.Collapsed;
         }
 
         void aiSettings_Closed(object sender, EventArgs e)
@@ -118,6 +121,23 @@ namespace ThinkGo
             }
         }
 
+        private bool CheckTrial()
+        {
+            if (!ThinkGoModel.Instance.IsTrialValid)
+            {
+                // Trial expired UI
+                if (MessageBox.Show("Your trial has expired.  Press ok to buy ThinkGo.", "Trial expired", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    MarketplaceDetailTask detailTask = new MarketplaceDetailTask();
+                    detailTask.Show();
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
 		private void PlayGame(object sender, System.Windows.RoutedEventArgs e)
 		{
             int boardSize = 9;
@@ -126,9 +146,21 @@ namespace ThinkGo
                 case 1: boardSize = 13; break;
                 case 2: boardSize = 19; break;
             }
-            ThinkGoModel.Instance.NewGame(boardSize, (GoPlayer)this.WhitePlayerPicker.SelectedItem, (GoPlayer)this.BlackPlayerPicker.SelectedItem);
-			((INavigate)Application.Current.RootVisual).Navigate(new Uri("/GamePage.xaml", UriKind.Relative));
+            
+            if (this.CheckTrial())
+            {
+                ThinkGoModel.Instance.NewGame(boardSize, (GoPlayer)this.WhitePlayerPicker.SelectedItem, (GoPlayer)this.BlackPlayerPicker.SelectedItem);
+                ((INavigate)Application.Current.RootVisual).Navigate(new Uri("/GamePage.xaml", UriKind.Relative));
+            }
 		}
+
+        private void ResumeGame(object sender, RoutedEventArgs e)
+        {
+            if (this.CheckTrial())
+            {
+                ((INavigate)Application.Current.RootVisual).Navigate(new Uri("/GamePage.xaml", UriKind.Relative));
+            }
+        }
 
 		private void BlackAiPickerClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{

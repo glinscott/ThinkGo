@@ -8,7 +8,7 @@
 	d:DesignWidth="480" Height="72">
 
 	<Grid x:Name="LayoutRoot" Background="#FF74624F">
-		<TextBlock HorizontalAlignment="Left" Margin="72,0,0,8" TextWrapping="Wrap" Text="ThinkGo" Foreground="White" VerticalAlignment="Bottom" FontSize="24"/>
+		<TextBlock x:Name="Title" HorizontalAlignment="Left" Margin="72,0,0,8" TextWrapping="Wrap" Text="ThinkGo" Foreground="White" VerticalAlignment="Bottom" FontSize="24"/>
 		<Image HorizontalAlignment="Left" Width="56" Source="Title.png" Margin="8,14,0,2" Height="56"/>
 	</Grid>
 </UserControl>

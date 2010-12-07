@@ -62,7 +62,7 @@ namespace AiHarness
 				}
 
                 // TODO: for now, we will use a heuristic here
-                // If the region has 
+                // 
 
 //				this.Iterate((byte)i);
 			}
@@ -118,27 +118,70 @@ namespace AiHarness
 ;W[ee];B[ef];W[de];B[df];W[ce];B[gd];W[fc];B[dc];W[ff];B[ge];W[db];B[gc];W[gb];B[eb]
 ;W[fb];B[hb];W[hc];B[fa];W[ga])";*/
 
+        private const string easyTest = @"(;GM[1]FF[4]AP[Drago:4.11]SZ[9]CA[UTF-8]AB[ac][ab][bb][cb][cc][dd][de][ef][ff][gf][hf][if][gd]AW[ad][bd][cd][bc][ce][df][cg][eg][fg][gg][hh][ig]PL[W])";
+
+        static double ScoreSearch(GoBoard board)
+        {
+            UctSearch scoreSearch = new UctSearch(board);
+            double estimate = scoreSearch.EstimateScore();
+            Console.WriteLine("Probability of winning: " + estimate);
+            return estimate;
+        }
+
+        static void PlayGameAgainstHuman()
+        {
+            GoBoard board = new GoBoard(9);
+            UctSearch search = new UctSearch(board);
+            Console.WriteLine("Type move in format: 'b7', or 'pass'");
+            Console.Write("Time per move (seconds): ");
+            search.SetMillisecondsToSearch(double.Parse(Console.ReadLine()) * 1000);
+            board.Reset();
+            GameSimulator.PrintBoard(board);
+            for (; ; )
+            {
+                string move = Console.ReadLine();
+                if (string.Equals(move, "pass"))
+                    break;
+                int y = char.ToLower(move[0]) - 'a';
+                int x = move[1] - '1';
+                board.PlaceStone(GoBoard.GeneratePoint(x, y));
+                GameSimulator.PrintBoard(board);
+                search.SearchLoop();
+                board.PlaceStone(search.FindBestSequence()[0]);
+                GameSimulator.PrintBoard(board);
+                Console.WriteLine(search.SimulationsDone);
+            }
+
+            GameSimulator.PrintBoard(board);
+        }
+
         static void Main(string[] args)
 		{
-            UctTests.Run();
+            //UctTests.Run();
 
-/*            SgfParser parser = new SgfParser(stayAliveTestString);
+            //PlayGameAgainstHuman();
+
+            SgfParser parser = new SgfParser(easyTest);
             SgfTree tree = parser.Root;
 
             SgfReplay replay = new SgfReplay(tree);
 			while (replay.PlayMove()) ;
 			GameSimulator.PrintBoard(replay.Board);
 
-            UctPlayer player = new UctPlayer();
-			player.SetBoard(replay.Board);
-            player.SetNumSimulations(1000);
-            int p = player.GetMove();
-            Console.WriteLine(replay.Board.GetPointNotation(p));
+            UctSearch search = new UctSearch(replay.Board);
+            search.SetNumSimulations(10000);
+            search.SearchLoop();
+            List<int> moves = search.FindBestSequence();
 
-			replay.Board.PlaceStone(p);
-			GameSimulator.PrintBoard(replay.Board);
+            foreach (int p in moves)
+            {
+                Console.WriteLine(replay.Board.GetPointNotation(p));
 
-            return;*/
+                replay.Board.PlaceStone(p);
+                GameSimulator.PrintBoard(replay.Board);
+            }
+            //ScoreSearch(replay.Board);
+            return;
 
 			GameSimulator simulator = new GameSimulator();
 			float value = 0;
@@ -161,12 +204,13 @@ namespace AiHarness
 			board.Reset();
 
 			this.players[GoBoard.Black] = new UctPlayer();
-			this.players[GoBoard.White] = new NoSearchPlayer();
+			this.players[GoBoard.White] = new UctPlayer();
+
 			for (int i = 0; i < 2; i++)
 			{
 				this.players[i].SetBoard(board);
 			}
-
+            ((UctPlayer)this.players[GoBoard.White]).SetNumSimulations(30);
 			int lastMove = GoBoard.MoveResign, lastLastMove = GoBoard.MoveResign;
 			while (!(lastMove == GoBoard.MovePass && lastLastMove == GoBoard.MovePass))
 			{
@@ -175,21 +219,26 @@ namespace AiHarness
 
 				board.PlaceStone(lastMove);
 
-				GameSimulator.PrintBoard(board);
-				Console.ReadKey();
-			 }
+				//GameSimulator.PrintBoard(board);
+				//Console.ReadKey();
+			}
 
 
-            GameSimulator.PrintBoard(board);
+            //GameSimulator.PrintBoard(board);
             float value = board.ScoreSimpleEndPosition(board.Komi, null);
-			//Console.WriteLine(value + " " + ((value > 0) ? "Black wins" : "White wins"));
+			Console.WriteLine(value + " " + ((value > 0) ? "Black wins" : "White wins"));
 			return value > 0 ? 1 : (value < 0 ? 0 : 0.5f);
 		}
 
 		public static void PrintBoard(GoBoard board)
 		{
+            Console.Write(' ');
+            for (int top = 0; top < board.Size; top++)
+                Console.Write(top + 1);
+            Console.WriteLine();
 			for (int y = 0; y < board.Size; y++)
 			{
+                Console.Write((char)('a' + y));
 				for (int x = 0; x < board.Size; x++)
 				{
 					int p = GoBoard.GeneratePoint(x, y);

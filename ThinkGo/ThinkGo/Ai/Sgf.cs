@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class SgfTree
     {
@@ -86,7 +87,10 @@
         {
             SgfNode rootNode = root.Sequence[0];
 
-            this.Board = new GoBoard(int.Parse(rootNode.Properties["SZ"][0]));
+            int boardSize = 19;
+            if (rootNode.TryGetList("SZ").Any())
+                boardSize = int.Parse(rootNode.Properties["SZ"][0]);
+            this.Board = new GoBoard(boardSize);
             this.Board.Reset();
 
             foreach (string position in rootNode.TryGetList("AB"))

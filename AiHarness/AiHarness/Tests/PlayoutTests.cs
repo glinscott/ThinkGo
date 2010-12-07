@@ -12,9 +12,32 @@ namespace AiHarness.Tests
         public static void Run()
         {
             UctTests test = new UctTests();
+            test.SelfAtariTests();
             test.PlayoutTests();
-//            test.GoodMoveTests();
+            test.GoodMoveTests();
             test.SimpleUctTests();
+        }
+
+        private void SelfAtariTests()
+        {
+            this.VerifyMove("B9", 1000, @"(;FF[4]CA[UTF-8]AP[GoGui:1.1pre.SVNexported]SZ[9]
+KM[6.5]DT[2008-01-02]
+AB[ab][bb][cb][db][eb][ea][ae][be][ce][de][ee][ef][ff][gf][hf][if][cg][eh]
+AW[da][ca][ad][bd][cd][dd][ed][fd][gc][gb][ga][gd][ge][he][hd][id]PL[B])");
+            this.VerifyMove("B9", 1000, @"(;FF[4]CA[UTF-8]AP[GoGui:1.1pre.SVNexported]SZ[9]
+KM[6.5]DT[2008-01-02]
+AB[ab][bb][cb][db][eb][ea][ae][be][ce][de][ee][ef][ff][gf][hf][if][cg][eh]
+AW[da][ca][ad][bd][cd][dd][ed][fd][gc][gb][ga][gd][ge][he][hd][id]PL[W])");
+            
+            this.VerifyMove("G1", 1000, @"(;FF[4]CA[UTF-8]AP[GoGui:1.2.2]SZ[9]
+AB[bi][bh][ch][dh][de][dd][dc][db][da][eh][eg][ef][ea][fh][gh]
+AW[ci][di][ei][ee][ed][ec][eb][fi][fg][ff][fe][fd][fc][fb][fa][gg][gb][hh][hg][ii][ih]
+PL[W])");
+
+            this.VerifyMove("G1", 1000, @"(;FF[4]CA[UTF-8]AP[GoGui:1.2.2]SZ[9]
+AB[bi][bh][ch][dh][de][dd][dc][db][da][eh][eg][ef][ea][fh][gh]
+AW[ci][di][ei][ee][ed][ec][eb][fi][fg][ff][fe][fd][fc][fb][fa][gg][gb][hh][hg][ii][ih]
+PL[B])");
         }
 
         private void PlayoutTests()

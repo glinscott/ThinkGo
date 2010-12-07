@@ -14,9 +14,10 @@
         private PlayoutPolicy policy = new PlayoutPolicy();
         private UctNode rootNode = null;
         private byte ourColor;
-        private int numSimulations = 1000;
+        private int numSimulations = 300;
         private double millisecondsToSearch = 0;
         private bool searching;
+        private int simulationsDone;
 
         private float biasTermConstant = 0.7f;
         private float raveWeightInitial = 1.0f;
@@ -50,6 +51,11 @@
             get { return 3 * this.board.Size * this.board.Size; }
         }
 
+        public int SimulationsDone
+        {
+            get { return this.simulationsDone; }
+        }
+
         public void SetNumSimulations(int numSimulations)
         {
             this.numSimulations = numSimulations;
@@ -73,7 +79,7 @@
 
             DateTime startTime = DateTime.Now;
 
-            int numberGames = 0;
+            this.simulationsDone = 0;
             while (this.searching)
             {
                 if (this.millisecondsToSearch != 0)
@@ -81,13 +87,13 @@
                     if ((DateTime.Now - startTime).TotalMilliseconds > this.millisecondsToSearch)
                         break;
                 }
-                else if (numberGames >= this.numSimulations)
+                else if (this.simulationsDone >= this.numSimulations)
                 {
                     break;
                 }
 
                 this.PlayGame();
-                numberGames++;
+                this.simulationsDone++;
             }
 
             return this.searching;
@@ -123,6 +129,21 @@
         public List<int> FindBestSequence()
         {
             List<int> result = new List<int>();
+
+            if (this.rootBoard.LastMove == GoBoard.MovePass)
+            {
+                // Try and end the game early for the human if they pass.
+                UctNode bestMove = this.FindBestChild(this.rootNode);
+                if (bestMove != null)
+                {
+                    if (GetValueEstimate(false, bestMove) > 0.80)
+                    {
+                        result.Add(GoBoard.MovePass);
+                        return result;
+                    }
+                }
+            }
+
             UctNode current = this.rootNode;
             while (current != null)
             {
@@ -131,6 +152,7 @@
                     break;
                 result.Add(current.Move);
             }
+
             return result;
         }
 

@@ -16,6 +16,21 @@ namespace ThinkGo
 		{
 			// Required to initialize variables
 			InitializeComponent();
+
+            this.Loaded += new RoutedEventHandler(ThinkGoTitle_Loaded);
 		}
+
+        void ThinkGoTitle_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ThinkGoModel.Instance.IsTrial)
+            {
+                int hoursRemaining = Math.Max(0, (int)(ThinkGoModel.Instance.TimeRemaining.TotalHours + 0.5));
+                this.Title.Text = string.Format("ThinkGo (Trial - {0} hours remain)", hoursRemaining);
+            }
+            else
+            {
+                this.Title.Text = "ThinkGo";
+            }
+        }
 	}
 }

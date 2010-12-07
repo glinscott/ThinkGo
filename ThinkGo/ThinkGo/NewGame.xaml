@@ -94,8 +94,16 @@
 				</DataTemplate>
 			</pc:ListPicker.ItemTemplate>
 		</pc:ListPicker>
-		<Button Content="Start" VerticalAlignment="Bottom" Margin="0,0,0,49" Click="PlayGame" Grid.Row="4"/>
-        
+
+        <Grid VerticalAlignment="Bottom" Margin="0,0,0,49" Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+		    <Button Content="Start"  Click="PlayGame" Grid.Column="0" />
+            <Button x:Name="ResumeGameButton" Content="Resume" Click="ResumeGame" Grid.Column="1" Width="216" />
+        </Grid>
+
         <TextBlock Margin="0,-3,206,0" TextWrapping="Wrap" Text="Board Size" Height="34" Grid.Row="3" VerticalAlignment="Top"/>
         <pc:ListPicker x:Name="BoardSizePicker" Margin="0,28,0,0" Height="48" VerticalAlignment="Top" FontSize="34.667" Foreground="Black" Grid.Row="3">
             <pc:ListPicker.ItemTemplate>

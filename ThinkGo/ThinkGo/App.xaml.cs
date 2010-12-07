@@ -101,18 +101,35 @@ namespace ThinkGo
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            this.LoadFromState();
         }
 
         // Code to execute when the application is activated (brought to foreground)
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
+            this.LoadFromState();
+        }
+
+        private void LoadFromState()
+        {
             try
             {
-                SimplePropertyReader reader = new SimplePropertyReader((string)PhoneApplicationService.Current.State["dataObject"]);
-                if (reader.GetValue("ActiveGame") != null)
+                object rawObject;
+                string dataObject;
+                PhoneApplicationService.Current.State.TryGetValue("dataObject", out rawObject);
+                dataObject = rawObject as string;
+                if (string.IsNullOrEmpty(dataObject))
                 {
-                    ThinkGoModel.Instance.Deserialize(reader);
+                    dataObject = (string)IsolatedStorageSettings.ApplicationSettings["dataObject"];
+                }
+                if (dataObject != null)
+                {
+                    SimplePropertyReader reader = new SimplePropertyReader(dataObject);
+                    if (reader.GetValue("ActiveGame") != null)
+                    {
+                        ThinkGoModel.Instance.Deserialize(reader);
+                    }
                 }
             }
             catch (Exception error)
@@ -138,7 +155,11 @@ namespace ThinkGo
                     writer.Write("ActiveGame", "true");
                     ThinkGoModel.Instance.ActiveGame.Serialize(writer);
                 }
-                PhoneApplicationService.Current.State["dataObject"] = writer.ToString();
+
+                string result = writer.ToString();
+
+                PhoneApplicationService.Current.State["dataObject"] = result;
+                IsolatedStorageSettings.ApplicationSettings["dataObject"] = result;
             }
             catch (Exception e)
             {

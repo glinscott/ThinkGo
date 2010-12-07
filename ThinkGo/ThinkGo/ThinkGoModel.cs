@@ -4,6 +4,7 @@
     using System;
     using System.IO.IsolatedStorage;
     using System.Diagnostics;
+    using Microsoft.Phone.Marketplace;
 
     public enum MoveMarkerOption
     {
@@ -21,6 +22,9 @@
 
         private float komi = 6.5f;
         private int handicap = 0;
+
+        private bool isTrial;
+        private long trialStartTime;
 
         private IsolatedStorageSettings isolatedStore;
 
@@ -56,6 +60,11 @@
         public void Deserialize(SimplePropertyReader reader)
         {
             this.ActiveGame = GoGame.DeSerialize(reader);
+        }
+
+        public bool IsTrial
+        {
+            get { return this.isTrial; }
         }
 
         public MoveMarkerOption MoveMarkerOption
@@ -123,6 +132,49 @@
             }
         }
 
+        public long TrialStartTime
+        {
+            get { return this.trialStartTime; }
+        }
+
+        public TimeSpan TimeRemaining
+        {
+            get
+            {
+                if (this.trialStartTime == 0)
+                    return TimeSpan.FromDays(2);
+                else
+                {
+                    TimeSpan span = DateTime.FromFileTimeUtc(this.trialStartTime).ToLocalTime().AddDays(2) - DateTime.Now;
+                    return span;
+                }
+            }
+        }
+
+        public bool IsTrialValid
+        {
+            get
+            {
+                if (this.isTrial)
+                {
+                    if (this.trialStartTime == 0)
+                    {
+                        this.trialStartTime = DateTime.Now.ToFileTimeUtc();
+                        this.UpdateIsolatedStore();
+                    }
+                    else
+                    {
+                        if (this.TimeRemaining.TotalDays < 0.0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+        }
+
         public void NewGame(int boardSize, GoPlayer whitePlayer, GoPlayer blackPlayer)
         {
             this.ActiveGame = new GoGame(boardSize, whitePlayer, blackPlayer, this.handicap, this.komi);
@@ -137,12 +189,19 @@
                 this.isolatedStore["SoundEnabled"] = this.SoundEnabled;
                 this.isolatedStore["Komi"] = this.Komi;
                 this.isolatedStore["Handicap"] = this.Handicap;
+                if (this.isTrial)
+                {
+                    this.isolatedStore["TrialStartTime"] = this.trialStartTime;
+                }
                 this.isolatedStore.Save();
             }
         }
 
         private void RefreshFromIsolatedStore()
         {
+            LicenseInformation licenseInformation = new LicenseInformation();
+            this.isTrial = licenseInformation.IsTrial();
+
             if (this.isolatedStore != null)
             {
                 if (!this.isolatedStore.TryGetValue<MoveMarkerOption>("MoveMarkerOption", out this.moveMarkerOption))
@@ -159,6 +218,12 @@
 
                 if (!this.isolatedStore.TryGetValue<int>("Handicap", out this.handicap))
                     this.handicap = 0;
+
+                if (this.isTrial)
+                {
+                    if (!this.isolatedStore.TryGetValue<long>("TrialStartTime", out this.trialStartTime))
+                        this.trialStartTime = 0;
+                }
             }
         }
 
