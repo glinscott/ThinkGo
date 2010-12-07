@@ -136,7 +136,8 @@
                 UctNode bestMove = this.FindBestChild(this.rootNode);
                 if (bestMove != null)
                 {
-                    if (GetValueEstimate(false, bestMove) > 0.80)
+                    if (GetValueEstimate(false, bestMove) > 0.80 ||
+                        GetValueEstimate(false, bestMove) < 0.20)
                     {
                         result.Add(GoBoard.MovePass);
                         return result;
