@@ -29,11 +29,16 @@
 
 			this.undoButton = (ApplicationBarIconButton)this.ApplicationBar.Buttons[0];
 
-			this.RefreshGame();
-
             this.GoBoardControl.StartedThinking += new System.EventHandler(GoBoardControl_StartedThinking);
             this.GoBoardControl.DoneThinking += new System.EventHandler(GoBoardControl_DoneThinking);
+
+            this.Loaded += new RoutedEventHandler(GamePage_Loaded);
 		}
+
+        void GamePage_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.RefreshGame();
+        }
 
         void GoBoardControl_DoneThinking(object sender, System.EventArgs e)
         {
