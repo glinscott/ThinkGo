@@ -1,5 +1,7 @@
 ﻿- Can't use more than 90mb of ram (DeviceExtendedProperties - ApplicationPeakMemoryUsage, DeviceTotalMemory)
 - AI needs to avoid playing into living groups
+- Use common-fate distance for proximity scoring
+- More unit tests for Go AI
 
 Bugs:
 - None known!
@@ -22,3 +24,10 @@ Version 1.2
 - AI will now resign if human passes in winning position
 - Games can now be resumed (saved across sessions)
 - Trial mode support
+
+Version 1.3
+-----------
+- Revamped trial support (todo)
+- Fixed scoring issue after human passes
+- Stronger AI
+- Suggest move feature (todo)

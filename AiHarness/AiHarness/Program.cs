@@ -118,7 +118,7 @@ namespace AiHarness
 ;W[ee];B[ef];W[de];B[df];W[ce];B[gd];W[fc];B[dc];W[ff];B[ge];W[db];B[gc];W[gb];B[eb]
 ;W[fb];B[hb];W[hc];B[fa];W[ga])";*/
 
-        private const string easyTest = @"(;GM[1]FF[4]AP[Drago:4.11]SZ[9]CA[UTF-8]AB[ac][ab][bb][cb][cc][dd][de][ef][ff][gf][hf][if][gd]AW[ad][bd][cd][bc][ce][df][cg][eg][fg][gg][hh][ig]PL[W])";
+        private const string easyTest = @"(;GM[1]FF[4]AP[Drago:4.11]SZ[9]CA[UTF-8]AB[ed][fd][gd][hd][de][ce][ef][ff][gf][hf][if][bf][be]AW[dd][cd][ee][fe][ge][he][ie][df][cf][ae][bd][bg]PL[W])";
 
         static double ScoreSearch(GoBoard board)
         {
@@ -142,8 +142,8 @@ namespace AiHarness
                 string move = Console.ReadLine();
                 if (string.Equals(move, "pass"))
                     break;
-                int y = char.ToLower(move[0]) - 'a';
-                int x = move[1] - '1';
+                int y = char.ToLower(move[1]) - 'a';
+                int x = move[0] - '1';
                 board.PlaceStone(GoBoard.GeneratePoint(x, y));
                 GameSimulator.PrintBoard(board);
                 search.SearchLoop();
@@ -169,7 +169,7 @@ namespace AiHarness
 			GameSimulator.PrintBoard(replay.Board);
 
             UctSearch search = new UctSearch(replay.Board);
-            search.SetNumSimulations(10000);
+            search.SetNumSimulations(300);
             search.SearchLoop();
             List<int> moves = search.FindBestSequence();
 
@@ -234,11 +234,11 @@ namespace AiHarness
 		{
             Console.Write(' ');
             for (int top = 0; top < board.Size; top++)
-                Console.Write(top + 1);
+                Console.Write((char)('a' + top));
             Console.WriteLine();
 			for (int y = 0; y < board.Size; y++)
 			{
-                Console.Write((char)('a' + y));
+                Console.Write(board.Size - y);
 				for (int x = 0; x < board.Size; x++)
 				{
 					int p = GoBoard.GeneratePoint(x, y);

@@ -90,11 +90,17 @@
 
             if (move == GoBoard.MoveNull)
             {
-				this.MoveType = PlayoutMoveType.Pass;
+                this.MoveType = PlayoutMoveType.Pass;
                 move = GoBoard.MovePass;
             }
-
-            // TODO: self-atari correction
+            else if (move != GoBoard.MovePass)
+            {
+                int newMove = this.board.DoSelfAtariCorrection(move);
+                if (newMove != -1)
+                {
+                    move = newMove;
+                }
+            }
 
             Debug.Assert(this.board.IsLegal(move, this.board.ToMove));
 

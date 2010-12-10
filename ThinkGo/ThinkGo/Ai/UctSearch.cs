@@ -21,7 +21,7 @@
 
         private float biasTermConstant = 0.7f;
         private float raveWeightInitial = 1.0f;
-        private float raveWeightFinal = 5000.0f;
+        private float raveWeightFinal = 200.0f;
         private float raveWeightParam1, raveWeightParam2;
         private float firstPlayUrgency = 10000.0f;
 
@@ -75,6 +75,7 @@
         {
             this.ourColor = this.rootBoard.ToMove;
             this.rootNode = new UctNode(new MoveInfo(GoBoard.MoveNull));
+            this.rootNode.AddGameResult(0.5f);
             this.searching = true;
 
             DateTime startTime = DateTime.Now;
@@ -145,10 +146,12 @@
                 }
             }
 
+            this.hackIsRoot = true;
             UctNode current = this.rootNode;
             while (current != null)
             {
                 current = this.FindBestChild(current);
+                this.hackIsRoot = false;
                 if (current == null)
                     break;
                 result.Add(current.Move);
@@ -166,9 +169,9 @@
             while (current != null)
             {
 #if NO
-                if (this.hackIsroot)
+                if (this.hackIsRoot)
                 {
-                    Console.WriteLine(this.board.GetPointNotation(current.Move) + " " + current.MoveCount + " " + this.GetValueEstimate(true, current));
+                    Console.WriteLine(current.Move + " " + this.board.GetPointNotation(current.Move) + " " + current.MoveCount + " " + this.GetValueEstimate(true, current) + " " + this.GetValueEstimate(false, current));
                 }
 #endif
                 int value = current.MoveCount;
@@ -202,7 +205,7 @@
             else
             {
                 bool abort = abortInTree;
-                if (!abort && !isTerminal)
+                if ((!abort && !isTerminal) || this.estimateScoreEnabled)
                     abort = !this.PlayoutGame();
                 if (abort)
                     // Unknown score == 0.5
@@ -246,9 +249,37 @@
             this.sequence.Clear();
         }
 
+        private GoBoard BuildBoard()
+        {
+            GoBoard tmp = new GoBoard(this.board.Size);
+            tmp.Initialize(this.rootBoard);
+            PlayoutPolicy policy = new PlayoutPolicy();
+            policy.Initialize(tmp);
+            foreach (int move in this.sequence)
+            {
+                tmp.PlaceStone(move);
+                //AiHarness.GameSimulator.PrintBoard(tmp);
+                policy.OnPlay();
+                int generatedMove = policy.GenerateMove();
+                Console.WriteLine("Generated " + board.GetPointNotation(generatedMove) + " " + policy.MoveType);
+            }
+            return tmp;
+        }
+
         private void UpdateTree(float eval)
         {
             float inverseEval = 1.0f - eval;
+
+#if NO
+            if (this.nodes.Count >= 2 && this.nodes[1].Move == 147)
+            {
+                if (eval < 0.5)
+                {
+                    this.BuildBoard();
+                    Console.WriteLine(eval);
+                }
+            }
+#endif
 
             for (int i = 0; i < this.nodes.Count; i++)
             {
@@ -326,12 +357,23 @@
                     continue;
                 }
 
+#if NO
+                if (i == 0 && move == 88 && eval > 0.5)
+                {
+                    this.BuildBoard();
+                }
+#endif
+
+                Debug.Assert(first >= i);
+
                 float weight = 2.0f - (float)(first - i) / (length - i);
                 child.AddRaveValue(eval, weight);
                 child = child.Next;
             }
         }
 
+
+        private bool hackIsRoot = false;
         private bool PlayInTree(out bool isTerminal)
         {
             int expandThreshold = 1;
@@ -342,6 +384,7 @@
             isTerminal = false;
 
             this.nodes.Add(this.rootNode);
+            this.hackIsRoot = true;
 
             while (this.sequence.Count < this.MaxGameLength)
             {
@@ -368,12 +411,15 @@
                 }
 
                 current = this.SelectChild(current);
+
                 this.nodes.Add(current);
                 int move = current.Move;
 
                 // TODO: Might need to detect complex-ko here :(
                 this.board.PlaceStone(move);
                 this.sequence.Add(move);
+
+                this.hackIsRoot = false;
 
                 if (breakAfterSelect)
                     break;

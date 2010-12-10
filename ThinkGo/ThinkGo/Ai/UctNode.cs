@@ -11,7 +11,7 @@
         {
             this.Move = moveInfo.Point;
             this.mean.Initialize(moveInfo.Value, moveInfo.Count);
-            this.rave.Initialize(moveInfo.RaveValue, moveInfo.RaveCount);
+            this.rave.Initialize(moveInfo.Value, moveInfo.Count);
 			this.HasBeenVisited = false;
         }
 
@@ -138,15 +138,12 @@
         public int Point;
         public float Value;
         public int Count;
-        public float RaveValue;
-        public float RaveCount;
 
         public MoveInfo(int p)
         {
             this.Point = p;
             this.Value = 0.0f;
             this.Count = 0;
-            this.RaveValue = this.RaveCount = 0.0f;
         }
     }
 }

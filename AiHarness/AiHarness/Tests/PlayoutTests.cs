@@ -12,10 +12,112 @@ namespace AiHarness.Tests
         public static void Run()
         {
             UctTests test = new UctTests();
-            test.SelfAtariTests();
+            test.SelfAtariCorrectionTests();
+            test.IsSimpleChainTests();
+
+            //test.SelfAtariTests();
             test.PlayoutTests();
-            test.GoodMoveTests();
+            //test.GoodMoveTests();
             test.SimpleUctTests();
+            test.RaveRegressionTests();
+        }
+
+        private void RaveRegressionTests()
+        {
+            // RAVE loves J6 here because it's played in a bunch of winning games that start with A4.  A4 gets penalized because if it's not played first, it gets played
+            // as atari defense, in a useless cause.  A4 is the only good move though.
+            this.VerifyMove("A4", 1000,
+                @"(;GM[1]FF[4]AP[Drago:4.11]SZ[9]CA[UTF-8]AB[ed][fd][gd][hd][de][ce][ef][ff][gf][hf][if][bf][be]AW[dd][cd][ee][fe][ge][he][ie][df][cf][ae][bd][bg]PL[W])");
+        }
+
+        private GoBoard CreateBoard(string[] board)
+        {
+            GoBoard result = new GoBoard(board.Length);
+            result.Reset();
+            for (int y = 0; y < result.Size; y++)
+            {
+                for (int x = 0; x < result.Size; x++)
+                {
+                    int p = GoBoard.GeneratePoint(x, result.Size - y - 1);
+                    if (board[y][x] == 'X')
+                        result.PlaceNonPlayedStone(p, GoBoard.Black);
+                    else if (board[y][x] == 'O')
+                        result.PlaceNonPlayedStone(p, GoBoard.White);
+                }
+            }
+            return result;
+        }
+
+        private void SelfAtariCorrectionTests()
+        {
+            // 
+            // 3 . . . .
+            // 2 X X O .
+            // 1 . O . .
+            //   A B C D
+            GoBoard board = new GoBoard(19);
+            board.Reset();
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(0, 1), GoBoard.Black);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(1, 1), GoBoard.Black);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(1, 0), GoBoard.White);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(2, 1), GoBoard.White);
+            
+            board.ToMove = GoBoard.White;
+            Verify(board.DoSelfAtariCorrection(GoBoard.GeneratePoint(0, 0)) == GoBoard.GeneratePoint(2, 0));
+            Verify(board.DoSelfAtariCorrection(GoBoard.GeneratePoint(2, 0)) == -1);
+
+            board.ToMove = GoBoard.Black;
+            Verify(board.DoSelfAtariCorrection(GoBoard.GeneratePoint(0, 0)) == -1);
+
+            // Capture verification (no self-atari)
+            // 3 O O . .
+            // 2 X X O .
+            // 1 . O . .
+            //   A B C D
+            board.Reset();
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(0, 1), GoBoard.Black);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(1, 1), GoBoard.Black);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(0, 2), GoBoard.White);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(1, 0), GoBoard.White);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(1, 2), GoBoard.White);
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(2, 1), GoBoard.White);
+            board.ToMove = GoBoard.White;
+            Verify(board.DoSelfAtariCorrection(GoBoard.GeneratePoint(0, 0)) == -1);
+
+            // Single stone
+            // 3 . .
+            // 2 X .
+            // 1 . .
+            //   A B C D
+            board.Reset();
+            board.PlaceNonPlayedStone(GoBoard.GeneratePoint(0, 1), GoBoard.Black);
+            board.ToMove = GoBoard.White;
+            Verify(board.DoSelfAtariCorrection(GoBoard.GeneratePoint(0, 0)) == GoBoard.GeneratePoint(1, 0));
+        }
+
+        private void IsSimpleChainTests()
+        {
+            GoBoard board = this.CreateBoard(
+             new string[] {
+            "X...XOOX.",
+            ".X..X..X.",
+            "....XOOX.",
+            ".........",
+            "..X...X..",
+            "O.OX.XO.O",
+            "........O",
+            "..O...OOO",
+            "........."
+            });
+
+            int other;
+            Verify(board.IsSimpleChain(GoBoard.GeneratePoint(0, 8), out other));
+            Verify(other == GoBoard.GeneratePoint(1, 7));
+            Verify(board.IsSimpleChain(GoBoard.GeneratePoint(5, 8), out other));
+            Verify(other == GoBoard.GeneratePoint(5, 6));
+            Verify(board.IsSimpleChain(GoBoard.GeneratePoint(6, 3), out other));
+            Verify(other == GoBoard.GeneratePoint(6, 1));
+            Verify(!board.IsSimpleChain(GoBoard.GeneratePoint(2, 3), out other));
         }
 
         private void SelfAtariTests()

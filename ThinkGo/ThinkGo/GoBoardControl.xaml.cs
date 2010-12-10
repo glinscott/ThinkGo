@@ -115,6 +115,7 @@
         private void CreateRectangles(Canvas parent, Rectangle[] pieces, double opacity)
         {
             int boardSize = this.game.Board.Size;
+            int endSize = opacity < 0.75 ? (int)(this.ActualWidth + 0.5) - (this.pieceSize * (boardSize - 1)) : this.pieceSize;
             for (int y = 0; y < boardSize; y++)
             {
                 for (int x = 0; x < boardSize; x++)
@@ -122,8 +123,8 @@
                     Rectangle rectangle = new Rectangle();
                     rectangle.Fill = null;
                     rectangle.Stroke = null;
-                    rectangle.Width = this.pieceSize;
-                    rectangle.Height = this.pieceSize;
+                    rectangle.Width = x == boardSize - 1 ? endSize : this.pieceSize;
+                    rectangle.Height = y == boardSize - 1 ? endSize : this.pieceSize;
                     rectangle.Opacity = opacity;
                     Canvas.SetLeft(rectangle, x * this.pieceSize);
                     Canvas.SetTop(rectangle, y * this.pieceSize);

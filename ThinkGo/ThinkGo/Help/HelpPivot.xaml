@@ -37,7 +37,7 @@
 		<controls:Pivot x:Name="pivot" Title="HELP" Grid.Row="1">
 			<controls:PivotItem Header="about">
 				<Grid>
-					<TextBlock TextWrapping="Wrap" Text="Version 1.0" Margin="0" d:LayoutOverrides="Width" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+					<TextBlock TextWrapping="Wrap" Text="Version 1.4" Margin="0" d:LayoutOverrides="Width" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 					<TextBlock TextWrapping="Wrap" Text="Copyright © Gary Linscott 2010" Margin="0,31,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 					<TextBlock HorizontalAlignment="Center" Margin="0,111,0,0" TextWrapping="Wrap" Text="Developed by Gary Linscott" VerticalAlignment="Top"/>
 					<TextBlock Margin="0,140,0,0" TextWrapping="Wrap" Text="Thanks to Liza, Mom and Dad, and Unni" VerticalAlignment="Top" HorizontalAlignment="Center"/>

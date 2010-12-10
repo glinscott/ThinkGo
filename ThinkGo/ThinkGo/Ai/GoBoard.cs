@@ -218,6 +218,7 @@
 			return false;
 		}
 
+        // Does block have two shared liberties with some other block?
 		public bool IsSimpleChain(int block, out int other)
 		{
 			if (this.NumLiberties(block) < 2)
@@ -237,7 +238,7 @@
 			this.anchors2.Clear();
 
 			this.NeighborBlocks(lib1, color, int.MaxValue, this.anchors1);
-			this.NeighborBlocks(lib1, color, int.MaxValue, this.anchors2);
+			this.NeighborBlocks(lib2, color, int.MaxValue, this.anchors2);
 
 			foreach (int anchor in this.anchors1)
 			{
@@ -666,7 +667,87 @@
 			return true;
 		}
 
-		private void DebugVerify()
+        /// <summary>
+        /// Checks if the move will put the block into self-atari.  If so, returns another move which will not.
+        /// </summary>
+        public int DoSelfAtariCorrection(int p)
+        {
+            byte toMove = this.ToMove;
+
+            // Can't be losing liberties
+            if (this.NumNeighborsEmpty(p) >= 2)
+                return -1;
+
+            int result = -1;
+            if (this.NumNeighbors(p, toMove) > 0)
+            {
+                // Part of existing block
+                if (!this.SelfAtari(p, toMove))
+                    return -1;
+
+                byte opp = OppColor(toMove);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int target = p + DirDelta[i];
+                    byte c = this.Board[target];
+                    if (c == GoBoard.Empty)
+                        result = target;
+                    else if (c == toMove)
+                    {
+                        foreach (int lib in this.GetLiberties(target))
+                            if (lib != p)
+                            {
+                                result = lib;
+                                break;
+                            }
+                    }
+                    else if (c == opp && this.InAtari(target))
+                        result = target;
+                    if (result != -1)
+                        break;
+                }
+
+                Debug.Assert(result != -1);
+                if (this.IsLegal(result, toMove) &&
+                    !this.SelfAtari(result, toMove))
+                {
+                    return result;
+                }
+            }
+            else if (this.NumNeighborsEmpty(p) > 0 && !this.CanCapture(p, toMove))
+            {
+                for (int i = 0; i < 4; i++)
+                    if (this.Board[p + DirDelta[i]] == GoBoard.Empty)
+                    {
+                        result = p + DirDelta[i];
+                        break;
+                    }
+
+                Debug.Assert(result != -1);
+                // Single stone with empty neighbors, possibly replace
+                if (this.IsLegal(result, toMove) &&
+                    (this.NumNeighborsEmpty(result) >= 2 ||
+                     this.CanCapture(result, toMove)))
+                    return result;
+            }
+
+            return -1;
+        }
+
+        public bool CanCapture(int p, byte c)
+        {
+            byte opp = OppColor(c);
+            for (int i = 0; i < 4; i++)
+            {
+                int target = p + DirDelta[i];
+                if (this.Board[target] == opp && this.NumLiberties(target) <= 1)
+                    return true;
+            }
+            return false;
+        }
+
+        private void DebugVerify()
 		{
 			return;
 
