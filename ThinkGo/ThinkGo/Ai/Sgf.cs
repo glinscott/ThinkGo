@@ -31,6 +31,8 @@
 
         public void AddProperty(string name)
         {
+            if (this.properties.ContainsKey(name))
+                return;
             this.properties.Add(name, new List<string>());
         }
 
@@ -90,8 +92,14 @@
             int boardSize = 19;
             if (rootNode.TryGetList("SZ").Any())
                 boardSize = int.Parse(rootNode.Properties["SZ"][0]);
+            
+
             this.Board = new GoBoard(boardSize);
             this.Board.Reset();
+
+            string komi = rootNode.TryGetList("KM").FirstOrDefault();
+            if (komi != null)
+                this.Board.Komi = float.Parse(komi);
 
             foreach (string position in rootNode.TryGetList("AB"))
             {

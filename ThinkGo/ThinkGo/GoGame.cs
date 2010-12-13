@@ -4,10 +4,6 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using ThinkGo.Ai;
-    using System.Windows.Controls;
-    using Microsoft.Phone.Controls;
-    using System.Windows;
-    using System.IO;
 
     public class GoGame : INotifyPropertyChanged
     {

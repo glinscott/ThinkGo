@@ -24,8 +24,7 @@ namespace ThinkGo
         {
             if (ThinkGoModel.Instance.IsTrial)
             {
-                int hoursRemaining = Math.Max(0, (int)(ThinkGoModel.Instance.TimeRemaining.TotalHours + 0.5));
-                this.Title.Text = string.Format("ThinkGo (Trial - {0} hours remain)", hoursRemaining);
+                this.Title.Text = "ThinkGo (Trial Mode)";
             }
             else
             {

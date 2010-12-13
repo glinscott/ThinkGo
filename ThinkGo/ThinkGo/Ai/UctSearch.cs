@@ -257,11 +257,11 @@
             policy.Initialize(tmp);
             foreach (int move in this.sequence)
             {
-                tmp.PlaceStone(move);
-                //AiHarness.GameSimulator.PrintBoard(tmp);
-                policy.OnPlay();
+//                AiHarness.GameSimulator.PrintBoard(tmp);
                 int generatedMove = policy.GenerateMove();
                 Console.WriteLine("Generated " + board.GetPointNotation(generatedMove) + " " + policy.MoveType);
+                tmp.PlaceStone(move);
+                policy.OnPlay();
             }
             return tmp;
         }
@@ -271,11 +271,11 @@
             float inverseEval = 1.0f - eval;
 
 #if NO
-            if (this.nodes.Count >= 2 && this.nodes[1].Move == 147)
+            if (this.nodes.Count >= 2 && this.board.GetPointNotation(this.nodes[1].Move) == "G7")
             {
                 if (eval < 0.5)
                 {
-                    this.BuildBoard();
+//                    this.BuildBoard();
                     Console.WriteLine(eval);
                 }
             }
@@ -356,13 +356,6 @@
                     child = child.Next;
                     continue;
                 }
-
-#if NO
-                if (i == 0 && move == 88 && eval > 0.5)
-                {
-                    this.BuildBoard();
-                }
-#endif
 
                 Debug.Assert(first >= i);
 

@@ -118,7 +118,9 @@ namespace AiHarness
 ;W[ee];B[ef];W[de];B[df];W[ce];B[gd];W[fc];B[dc];W[ff];B[ge];W[db];B[gc];W[gb];B[eb]
 ;W[fb];B[hb];W[hc];B[fa];W[ga])";*/
 
-        private const string easyTest = @"(;GM[1]FF[4]AP[Drago:4.11]SZ[9]CA[UTF-8]AB[ed][fd][gd][hd][de][ce][ef][ff][gf][hf][if][bf][be]AW[dd][cd][ee][fe][ge][he][ie][df][cf][ae][bd][bg]PL[W])";
+        private const string easyTest = @"(;CA[Windows-1252]AB[ac][bc][cc][cd][gh][gd][hh][hi][dh][eh][ff][ge][hd][de][ee]
+[df][cf][cg][bg]AW[bb][cb][db][dc][dd][be][bf][ce][dg][fh][hg][ih][eg][gf][he][fg]
+[bd][gg][fi]AP[MultiGo:4.4.4]SZ[9]AB[ie]MULTIGOGM[1]PL[W])";
 
         static double ScoreSearch(GoBoard board)
         {
@@ -169,7 +171,7 @@ namespace AiHarness
 			GameSimulator.PrintBoard(replay.Board);
 
             UctSearch search = new UctSearch(replay.Board);
-            search.SetNumSimulations(300);
+            search.SetNumSimulations(10000);
             search.SearchLoop();
             List<int> moves = search.FindBestSequence();
 

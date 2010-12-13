@@ -11,6 +11,7 @@
     using ThinkGo.Ai;
     using System.Windows.Threading;
     using System.Threading;
+    using Microsoft.Phone.Tasks;
 
 	public partial class GoBoardControl : UserControl
 	{
@@ -269,9 +270,21 @@
 			base.OnMouseMove(e);
 		}
 
-
         private void PlayMove(int move)
         {
+            if (ThinkGoModel.Instance.IsTrial &&
+                this.game.Moves.Count > 15)
+            {
+                // Trial expired UI
+                if (MessageBox.Show("Trial mode only supports 15 moves.  Press ok to buy ThinkGo.", "Trial expired", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    MarketplaceDetailTask detailTask = new MarketplaceDetailTask();
+                    detailTask.Show();
+                }
+
+                return;
+            }
+
             bool wasCapture = false;
             foreach (int deletedPiece in this.game.PlayMove(move))
             {

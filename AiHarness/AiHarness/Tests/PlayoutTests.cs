@@ -15,9 +15,9 @@ namespace AiHarness.Tests
             test.SelfAtariCorrectionTests();
             test.IsSimpleChainTests();
 
-            //test.SelfAtariTests();
+            test.SelfAtariTests();
             test.PlayoutTests();
-            //test.GoodMoveTests();
+            test.GoodMoveTests();
             test.SimpleUctTests();
             test.RaveRegressionTests();
         }
@@ -134,12 +134,12 @@ AW[da][ca][ad][bd][cd][dd][ed][fd][gc][gb][ga][gd][ge][he][hd][id]PL[W])");
             this.VerifyMove("G1", 1000, @"(;FF[4]CA[UTF-8]AP[GoGui:1.2.2]SZ[9]
 AB[bi][bh][ch][dh][de][dd][dc][db][da][eh][eg][ef][ea][fh][gh]
 AW[ci][di][ei][ee][ed][ec][eb][fi][fg][ff][fe][fd][fc][fb][fa][gg][gb][hh][hg][ii][ih]
-PL[W])");
+PL[W]KM[7.5])");
 
             this.VerifyMove("G1", 1000, @"(;FF[4]CA[UTF-8]AP[GoGui:1.2.2]SZ[9]
 AB[bi][bh][ch][dh][de][dd][dc][db][da][eh][eg][ef][ea][fh][gh]
 AW[ci][di][ei][ee][ed][ec][eb][fi][fg][ff][fe][fd][fc][fb][fa][gg][gb][hh][hg][ii][ih]
-PL[B])");
+PL[B]KM[7.5])");
         }
 
         private void PlayoutTests()
@@ -197,6 +197,11 @@ BL[187];W[fc]WL[244];B[hc]BL[177];W[fh]WL[235];B[fg]BL[168];W[ei]WL[235];B[df]BL
 ;W[di]WL[235];B[cc]BL[149];W[cd]WL[235];B[cb]BL[140];W[bd]WL[235];B[ed]BL[131];W[db]
 WL[235];B[hb]BL[123];W[af]WL[235];B[ae]BL[115];W[ag]WL[235];B[dd]BL[107];W[be]WL[230]
 ;B[ga]BL[100];W[fa]WL[230];B[bb]BL[92];W[ha]WL[224];B[ab]BL[85])");
+
+            // J4 is the only move to save from nakade
+            this.VerifyMove("J4", 1000, @"(;CA[Windows-1252]AB[ac][bc][cc][cd][gh][gd][hh][hi][dh][eh][ff][ge][hd][de][ee]
+[df][cf][cg][bg]AW[bb][cb][db][dc][dd][be][bf][ce][dg][fh][hg][ih][eg][gf][he][fg]
+[bd][gg][fi]AP[MultiGo:4.4.4]SZ[9]AB[ie]MULTIGOGM[1]PL[W])");
         }
 
         private void SimpleUctTests()
