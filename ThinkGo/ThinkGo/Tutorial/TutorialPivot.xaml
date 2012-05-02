@@ -59,7 +59,7 @@
 			
 			<controls:PivotItem Header="liberties">
 				<StackPanel>
-					<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,0,0,16" Text="Liberties are the empty intersections next to a chain. A single stone with no neighbors would have 4 liberties. A single stone on the edge of the board would have 3 liberties. The liberties for the white chain are marked here:"/>
+					<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,0,0,16" Text="Liberties are the empty intersections next to a chain. A single stone with no neighbors would have 4 liberties. A single stone on the edge of the board would have 3 liberties. The liberties for the black chain are marked here:"/>
 					<Image Source="liberty.jpg" Stretch="None" />
 				</StackPanel>
 			</controls:PivotItem>
