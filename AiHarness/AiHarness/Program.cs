@@ -157,11 +157,87 @@ namespace AiHarness
             GameSimulator.PrintBoard(board);
         }
 
+        static void PlayGtpGame()
+        {
+            string[] knownCommands = {
+                "protocol_version",
+                "name",
+                "version",
+                "known_command",
+                "list_commands",
+                "quit",
+                "boardsize",
+                "clear_board",
+                "komi",
+                "play",
+                "genmove"
+            };
+
+            bool alive = true;
+            GoBoard board = null;
+            UctSearch search = null;
+            while (alive)
+            {
+                string command = Console.ReadLine();
+                var commands = command.Split(' ');
+                string response = "";
+                int first = char.IsDigit(commands[0][0]) ? 1 : 0;
+                switch (commands[first])
+                {
+                    case "protocol_version": response = "2"; break;
+                    case "name": response = "GarboGo"; break;
+                    case "version": response ="1.0"; break;
+                    case "known_command": response = knownCommands.Contains(commands[first + 1]) ? "true" : "false"; break;
+                    case "list_commands": response = knownCommands.Aggregate((s, s2) => s + " " + s2); break;
+                    case "quit": alive = false; break;
+                    case "boardsize": board = new GoBoard(int.Parse(commands[first + 1])); search = new UctSearch(board); break;
+                    case "clear_board": board.Reset(); break;
+                    case "komi": board.Komi = float.Parse(commands[first + 1]); break;
+                    case "move":
+                        string color = commands[first + 1];
+                        board.ToMove = color.ToLower()[0] == 'b' ? GoBoard.Black : GoBoard.White;
+                        
+                        string move = commands[first + 2];
+                        if (move.ToLower() == "pass")
+                            board.PlaceStone(GoBoard.MovePass);
+                        else
+                        {
+                            int y = char.ToLower(move[0]) - 'a';
+                            int x = move[1] - '1';
+                            board.PlaceStone(GoBoard.GeneratePoint(x, y));
+                        }
+                        break;
+
+                    case "genmove":
+                        {
+                            search.SearchLoop();
+                            int bestMove = search.FindBestSequence()[0];
+                            board.PlaceStone(bestMove);
+                            if (bestMove == GoBoard.MovePass)
+                                response = "pass";
+                            else
+                            {
+                                int x, y;
+                                GoBoard.GetPointXY(bestMove, out x, out y);
+                                response += (char)('a' + y);
+                                response += (1 + x).ToString();
+                            }
+                        }
+                        break;
+                }
+
+                Console.Write("=");
+                if (first != 0)
+                    Console.Write(commands[0]);
+                Console.Write(" " + response + "\n\n");
+            }
+        }
+
         static void Main(string[] args)
 		{
             //UctTests.Run();
-
             //PlayGameAgainstHuman();
+            PlayGtpGame();
 
             SgfParser parser = new SgfParser(easyTest);
             SgfTree tree = parser.Root;
